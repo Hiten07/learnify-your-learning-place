@@ -3,8 +3,7 @@ import { axiosinstance } from './Responseinterceptors';
 import { AxiosRequestConfig } from 'axios';
 import { showToastMessage } from '../utils/Toast.errors';
 
-const coursesApis = async (endpoint: string,queryParams: AxiosRequestConfig['params']) => {
-
+const coursesgetApis = async (endpoint: string,queryParams: AxiosRequestConfig['params']) => {
     try {
         const result = await axiosinstance.get(endpoint,
         {
@@ -26,4 +25,26 @@ const coursesApis = async (endpoint: string,queryParams: AxiosRequestConfig['par
         console.log(error);
     }   
 }
-export default coursesApis;
+
+const coursespostApis = async (endpoint: string,data,queryParams: AxiosRequestConfig['params']) => {
+    try {
+        const result = await axiosinstance.post(endpoint,data,
+        {
+            // validateStatus: () => true,
+            params: queryParams,
+            headers: data instanceof FormData
+            ? { 'Content-Type': 'multipart/form-data' }
+            : { 'Content-Type': 'application/json' },
+        })
+        if(result.data) {
+            return result?.data;
+        }
+        else {
+            showToastMessage("internal server error",500);
+        }
+        
+    } catch (error) {
+        console.log(error);
+    }   
+}
+export { coursesgetApis,coursespostApis };

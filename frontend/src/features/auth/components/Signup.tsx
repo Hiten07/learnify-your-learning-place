@@ -50,7 +50,7 @@ const Signup = () => {
    }    
   return (
     <div className="bg-dark-red p-12 max-w-md mx-auto shadow-md bg-dark-gray mt-20"  style={{backgroundColor : "rgb(245, 245, 245)"}}>
-    <form onSubmit={handleSubmit(handleSubmitform)} className="bg-red">
+    <form onSubmit={handleSubmit(handleSubmitform)}>
     <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">
           Sign up        
     </h2>

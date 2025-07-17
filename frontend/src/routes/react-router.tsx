@@ -2,6 +2,8 @@ import { createBrowserRouter, type RouteObject } from "react-router";
 import { AuthRoutes } from "../features/auth/auth.routes";
 import {CourseRoutes} from "../features/courses/course.routes";
 import Home from "../components/Layouts/Home";
+import Dashboard from "../features/courses/components/Dashboard";
+
 
 const routes: RouteObject[] = [
   {
@@ -9,11 +11,15 @@ const routes: RouteObject[] = [
     element: <Home />,
     children: [
       {
+        path: "/dashboard",
+        element: <Dashboard/>, 
+      }, 
+      {
         path: "/users/*",
         element: <AuthRoutes/>, 
       }, 
       {
-        path: "/dashboard/*",
+        path: "/courses/*",
         element: <CourseRoutes />
       }
     ],

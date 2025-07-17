@@ -1,5 +1,5 @@
-import { useEffect, useState } from "react";
-import coursesApis from "../../../api/course.api";
+import { useEffect, useState,useCallback } from "react";
+import {coursesgetApis} from "../../../api/course.api";
 import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
@@ -7,7 +7,6 @@ const Dashboard = () => {
   const [coursedata, setCoursedata] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalCoursesCreated, setTotalCourseCreated] = useState(0);
-
 
   const [pagination, setPagination] = useState({
     page: 0,
@@ -21,10 +20,10 @@ const Dashboard = () => {
   };
 
 
-  const fetchAllInstructorCourses = async () => {
+  const fetchAllInstructorCourses = useCallback(async () => {
     try {
       setLoading(true);
-      const response = await coursesApis("/courses/mycourses", queryParams);
+      const response = await coursesgetApis("/courses/mycourses", queryParams);
       if (response.data.courses.length > 0) {
         setCoursedata(response.data.courses);
         setTotalCourseCreated(response.data.totalItems);
@@ -40,9 +39,7 @@ const Dashboard = () => {
       console.error(error);
       setLoading(false);
     }
-  };
-
-
+  },[queryParams])
 
   const Viewcoursematerial = async (coursedetails) => {
     const course = {
@@ -52,7 +49,7 @@ const Dashboard = () => {
       price: coursedetails.courseprice
     }
 
-    navigate(`/dashboard/courses/${coursedetails.courseid}`,{
+    navigate(`/courses/${coursedetails.courseid}`,{
       state: course
     })
   }
@@ -125,7 +122,7 @@ const Dashboard = () => {
                   {course.courseprice}
                 </p>
                 <p className="text-sm text-gray-500">
-                  Duration: {course.duration} mins
+                  Duration: {course.duration} Days
                 </p>
                 
                 <button type="button" 

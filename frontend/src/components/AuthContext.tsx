@@ -3,7 +3,6 @@ import { AuthContext } from './Createcontext';
 import Cookies from 'js-cookie';
 
 export const AuthProvider = ({children}) => {
-  console.log(children)
   const [authToken, setAuthToken] = useState<string | null>(Cookies.get('authtoken') as string | null);
 
   // Check for token when the app loads
@@ -23,7 +22,7 @@ export const AuthProvider = ({children}) => {
   const value = useMemo(() => {
     return {authToken,setAuthToken,logout}
   },[authToken,setAuthToken,logout])
-  
+
   return (
     <AuthContext.Provider value={value}>
      {children}

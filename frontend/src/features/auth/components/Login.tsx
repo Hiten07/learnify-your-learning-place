@@ -4,8 +4,8 @@ import { useForm } from "react-hook-form";
 import Button from "../../../components/Button/Button";
 import authApis from "../../../api/auth.api";
 import 'react-toastify/dist/ReactToastify.css';
-import Cookies from "js-cookie";
-import Navbar from "../../../components/Navbar";
+// import Cookies from "js-cookie";
+// import Navbar from "../../../components/Navbar";
 
 const Login = () => {
   const [logindata, setLogindata] = useState({});
@@ -22,11 +22,11 @@ const Login = () => {
           logindata
         );
         if (userDetailsToken) {
-          navigate("/dashboard",{
-            state: Cookies.get("authtoken")
-          })
-          
-          // window.location.href = "/dashboard";
+          // navigate("/dashboard",{
+          //   state: Cookies.get("authtoken")
+          // })
+
+          window.location.href = "/dashboard";
         }
       } catch (error) {
         console.log(error);
@@ -109,14 +109,6 @@ const Login = () => {
 
         <Button label="login" type="submit" disableState={isSubmitting}/>
         <Button label="reset" type="reset" disableState={isSubmitting} clickHandler={() => reset()}/>
-
-        {/* <button
-          type="submit"
-          disabled={isSubmitting}
-          className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2"
-          >
-          {isSubmitting ? "Submitting..." : "Login"}
-        </button> */}
       </form>
     </div>
   );

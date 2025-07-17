@@ -47,7 +47,6 @@ const authApis = async (endpoint: string, data: unknown) => {
       return result;
     }
   } catch (error) {
-    console.log(error);
 
     if (error.response.data) {
       return;

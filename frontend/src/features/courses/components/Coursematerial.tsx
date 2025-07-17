@@ -1,6 +1,6 @@
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import coursesApis from "../../../api/course.api";
+import {coursesgetApis} from "../../../api/course.api";
 import ReactPlayer from "react-player";
 
 const Coursematerial = () => {
@@ -14,7 +14,7 @@ const Coursematerial = () => {
 
   useEffect(() => {
     const fetchCourse = async () => {
-      const res = await coursesApis(`/coursecontent`, queryParams);
+      const res = await coursesgetApis(`/coursecontent`, queryParams);
       if (res) {
         setCourseData(res);
       }
@@ -22,7 +22,6 @@ const Coursematerial = () => {
 
     fetchCourse();
   }, []);
-  console.log(courseData);
 
   if (!courseData) return <p>Loading...</p>;
 
@@ -70,7 +69,7 @@ const Coursematerial = () => {
                   </div>
                 )}
 
-                {lesson.fileUrl && (
+              {lesson.fileUrl && (
                   <a
                     href={lesson.fileUrl}
                     target="_blank"
