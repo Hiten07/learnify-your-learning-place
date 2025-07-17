@@ -1,6 +1,7 @@
 import { ReactNode, useEffect, useState } from "react";
 import { SubmitHandler, useForm, } from "react-hook-form";
 import { useNavigate } from 'react-router-dom';
+import Button from "../../../components/Button/Button";
 import authApis from "../../../api/auth.api";
 import "../../../App.css";
 
@@ -17,7 +18,7 @@ type Inputs = {
 const Signup = () => {
     
     const [userData,setUserdata] = useState({});
-    const { register,handleSubmit,formState: {errors,isSubmitting} } = useForm();
+    const { register,handleSubmit,reset,formState: {errors,isSubmitting} } = useForm();
     const navigate = useNavigate();
 
   useEffect(() => {
@@ -28,9 +29,10 @@ const Signup = () => {
     const registerUser = async () => {
         try {
             const userDetailsToken = await authApis("/users/register",userData);
+            console.log(userDetailsToken)
             if(userDetailsToken) {
-                navigate("/verify-otp",{
-                    state: userDetailsToken
+                navigate("/users/verify-otp",{
+                    state: userDetailsToken.token
                 })
             }
         } catch (error) {
@@ -38,7 +40,7 @@ const Signup = () => {
         }
     }
     registerUser();
-  },[userData])
+  },[userData,navigate])
     
   const handleSubmitform: SubmitHandler<Inputs> = async (data) => {
       // await new Promise((resolve) => setTimeout(resolve,5000))
@@ -157,17 +159,21 @@ const Signup = () => {
         className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
         {...register("role")}
       >
+        <option defaultValue={"role"}>select your role</option>
         <option value="student">student</option>
         <option value="instructor">Instructor</option>
       </select>
-  
+
+      <Button label="submit" type="submit" disableState={isSubmitting}/>
+      <Button label="reset" type="reset" disableState={isSubmitting} clickHandler={() => reset()}/>
+{/*   
       <button
         type="submit" 
         disabled={isSubmitting}
         className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded cursor-pointer"
         >
-        value={isSubmitting ? "submitting" : "submit"}
-      </button>
+        {isSubmitting ? "submitting" : "submit"} */}
+      {/* </button> */}
     </form>
   </div>
   

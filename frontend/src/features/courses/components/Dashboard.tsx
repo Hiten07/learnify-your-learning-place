@@ -1,33 +1,40 @@
 import { useEffect, useState } from "react";
 import coursesApis from "../../../api/course.api";
+import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
+  const navigate = useNavigate();
   const [coursedata, setCoursedata] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalCoursesCreated, setTotalCourseCreated] = useState(0);
+
+
   const [pagination, setPagination] = useState({
     page: 0,
     totalPages: 1,
   });
 
   const queryParams = {
-    page: "0",
+    page: "1",
     sortBy: "duration",
     sortType: "asc"
   };
+
 
   const fetchAllInstructorCourses = async () => {
     try {
       setLoading(true);
       const response = await coursesApis("/courses/mycourses", queryParams);
-      setCoursedata(response.data.courses);
-      setTotalCourseCreated(response.data.totalItems);
-      setPagination({
-        page: response.data.currentPage,
-        totalPages: response.data.totalPages,
-      });
+      if (response.data.courses.length > 0) {
+        setCoursedata(response.data.courses);
+        setTotalCourseCreated(response.data.totalItems);
+        setPagination({
+          page: response.data.currentPage,
+          totalPages: response.data.totalPages,
+        });
+      }
       console.log(response);
-      
+
       setLoading(false);
     } catch (error) {
       console.error(error);
@@ -35,7 +42,22 @@ const Dashboard = () => {
     }
   };
 
-  const handlePaginationChange = (newPage) => {
+
+
+  const Viewcoursematerial = async (coursedetails) => {
+    const course = {
+      coursename: coursedetails.coursename,
+      coursedescription: coursedetails.description,
+      duration: coursedetails.duration,
+      price: coursedetails.courseprice
+    }
+
+    navigate(`/dashboard/courses/${coursedetails.courseid}`,{
+      state: course
+    })
+  }
+
+  const handlePaginationChange = (newPage: number) => {
     queryParams.page = newPage.toString();
     fetchAllInstructorCourses();
   };
@@ -44,18 +66,24 @@ const Dashboard = () => {
     fetchAllInstructorCourses();
   }, []);
 
-  const totalCoursesPurchased = 0;
+  const totalCoursesPurchased = 123;
   const amountGenerated = 100000;
 
   return (
     <div className="container mx-auto p-8">
       <h4 className="text-2xl font-bold mb-8">My Courses</h4>
 
+      {!loading && coursedata.length == 0 && (
+        <div className="text-center text-lg text-blue-500 mb-4">
+          No course found, please create course
+        </div>
+      )}
+
       {loading ? (
         <div className="text-center text-lg text-blue-500 mb-4">
           Fetching courses...
         </div>
-      ) : (
+      ) : coursedata.length > 0 && (
         <>
           <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-10">
             <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -99,28 +127,39 @@ const Dashboard = () => {
                 <p className="text-sm text-gray-500">
                   Duration: {course.duration} mins
                 </p>
+                
+                <button type="button" 
+                        onClick={() => Viewcoursematerial(course)} 
+                        className="mt-8 text-sm text-white p-2 rounded cursor-pointer" style={{backgroundColor: "darkblue-600",fontSize: "12px"}}
+                        >
+                    view course material
+                </button>
               </div>
             ))}
 
-            <div className="pagination">
+        
+          </div>
+          <div className="pagination flex content-center justify-center">
               <button
-                className="bg-dark-blue"
-                disabled={pagination.page < 1}
+                className="mt-8 w-24 text-white font-semibold py-2 rounded cursor-pointer" style={{backgroundColor: "darkblue-600"}}
+                disabled={pagination.page <= 1}
                 onClick={() => handlePaginationChange(pagination.page - 1)}
               >
                 Prev
               </button>
-              <span>
+              <span
+                className="font-semibold mt-12 m-5" 
+              >
                 Page {pagination.page} of {pagination.totalPages}
               </span>
               <button
+                className="mt-8 w-24 text-white font-semibold py-2 rounded cursor-pointer" style={{backgroundColor: "darkblue-600"}}
                 disabled={pagination.page >= pagination.totalPages}
                 onClick={() => handlePaginationChange(pagination.page + 1)}
               >
                 Next
               </button>
             </div>
-          </div>
         </>
       )}
     </div>

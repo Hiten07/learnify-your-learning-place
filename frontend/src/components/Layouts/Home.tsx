@@ -6,12 +6,12 @@ const Home = () => {
   return (
     <div>
       <header>
-            <Navbar/>
-            <ToastContainer/>
-        </header>
+          <Navbar/>
+          <ToastContainer/>
+      </header>
         <Outlet/>
-        <footer>
-        </footer>
+      <footer>
+      </footer>
     </div>
   )
 }

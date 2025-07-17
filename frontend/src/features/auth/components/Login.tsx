@@ -1,8 +1,11 @@
-import { useForm } from "react-hook-form";
 import { ReactNode, useState,useEffect } from "react";
-import authApis from "../../../api/auth.api";
 import { useNavigate } from "react-router-dom";
+import { useForm } from "react-hook-form";
+import Button from "../../../components/Button/Button";
+import authApis from "../../../api/auth.api";
 import 'react-toastify/dist/ReactToastify.css';
+import Cookies from "js-cookie";
+import Navbar from "../../../components/Navbar";
 
 const Login = () => {
   const [logindata, setLogindata] = useState({});
@@ -19,14 +22,18 @@ const Login = () => {
           logindata
         );
         if (userDetailsToken) {
-          navigate("/dashboard");
+          navigate("/dashboard",{
+            state: Cookies.get("authtoken")
+          })
+          
+          // window.location.href = "/dashboard";
         }
       } catch (error) {
         console.log(error);
       }
     };
     registerUser();
-  }, [logindata]);
+  }, [logindata,navigate]);
 
   function handleSubmitform(data: any) {
     console.log("Login data:", logindata);
@@ -35,6 +42,7 @@ const Login = () => {
 
   const {
     register,
+    reset,
     handleSubmit,
     formState: { errors, isSubmitting },
   } = useForm();
@@ -99,13 +107,16 @@ const Login = () => {
           <option value="instructor">Instructor</option>
         </select>
 
-        <button
+        <Button label="login" type="submit" disableState={isSubmitting}/>
+        <Button label="reset" type="reset" disableState={isSubmitting} clickHandler={() => reset()}/>
+
+        {/* <button
           type="submit"
           disabled={isSubmitting}
           className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2"
           >
           {isSubmitting ? "Submitting..." : "Login"}
-        </button>
+        </button> */}
       </form>
     </div>
   );

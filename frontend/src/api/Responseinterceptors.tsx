@@ -39,6 +39,7 @@ axiosinstance.interceptors.response.use(
       if (data?.message && typeof data?.message === 'string') {
         toast.success(data.message);
       } 
+
     //   else if (data?.status && typeof data?.status === 'string') {
     //     toast.success(data.status + ` - Status code: ${data.code}`);
     //   }
@@ -54,9 +55,12 @@ axiosinstance.interceptors.response.use(
       else if (data?.message && data?.status && (data?.status === 500 || data?.status === 500)) {
         toast.error('Server error - try again later');
       } 
-      else {
+      else if(data?.message && !data.status) {
         //  validation error for any input
         toast.error(data.message); 
+      }
+      else {
+        toast.info("internal server error");
       }
   
       return Promise.reject(data);

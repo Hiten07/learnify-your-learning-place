@@ -1,5 +1,6 @@
 import { SubmitHandler, useForm, } from "react-hook-form";
-import { useLocation } from 'react-router-dom';
+import { useLocation, useNavigate } from 'react-router-dom';
+import Button from "../../../components/Button/Button";
 import { useEffect, useState } from "react";
 import authApis from "../../../api/auth.api";
 
@@ -9,10 +10,10 @@ type otpType = {
 
 const Verifyotp = () => {
 
-
+    const navigate = useNavigate();
     const token = useLocation();
     const [otp,setOtp] = useState({token: token.state});
-    const { register,handleSubmit,formState: {errors,isSubmitting} } = useForm();
+    const { register,handleSubmit,reset,formState: {errors,isSubmitting} } = useForm();
     
     useEffect(() => {
 
@@ -21,12 +22,14 @@ const Verifyotp = () => {
       }
 
       const verifyOtp = async () => {
-        console.log(otp)
         const userDetailsToken = await authApis("/users/register/verify",otp);
-        console.log(userDetailsToken)
-      }
+
+        if(userDetailsToken) {
+          navigate("/users/login");
+        }
+      } 
       verifyOtp();
-    },[otp])
+    },[otp,navigate])
 
     const handleSubmitform: SubmitHandler<otpType> = async (data) => {
 
@@ -54,16 +57,17 @@ const Verifyotp = () => {
                       minLength: {
                           value: 6,
                           message: "otp must be of 6 digits"
+                      },
+                      maxLength: {
+                        value: 6,
+                        message: "otp must be of only 6 digits"
                       }
                   })}>
               </input>
+
+              <Button label="submit" type="submit" disableState={isSubmitting}/>
+              <Button label="reset" type="reset" disableState={isSubmitting} clickHandler={() => reset()}/>
               
-              
-              <button 
-                type="submit" 
-                disabled={isSubmitting} 
-                 className="mt-6 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2"
-                 >{isSubmitting ? "submitting" : "submit"}</button>
             </form>
     </div>
   )
