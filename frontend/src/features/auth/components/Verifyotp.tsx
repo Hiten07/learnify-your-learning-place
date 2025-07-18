@@ -3,6 +3,8 @@ import { useLocation, useNavigate } from 'react-router-dom';
 import Button from "../../../components/Button/Button";
 import { useEffect, useState } from "react";
 import authApis from "../../../api/auth.api";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { verifyOtpSchema } from "../models/Verifyotp";
 
 type otpType = {
   otp?: string;
@@ -13,7 +15,9 @@ const Verifyotp = () => {
     const navigate = useNavigate();
     const token = useLocation();
     const [otp,setOtp] = useState({token: token.state});
-    const { register,handleSubmit,reset,formState: {errors,isSubmitting} } = useForm();
+    const { register,handleSubmit,reset,formState: {errors,isSubmitting} } = useForm({
+      resolver: zodResolver(verifyOtpSchema)
+    });
     
     useEffect(() => {
 
@@ -50,7 +54,7 @@ const Verifyotp = () => {
 
               <input 
                  className={`w-full mt-4 px-3 py-2 border rounded mb-4 ${
-                  errors.title ? "border-red-500" : "border-gray-300"
+                  errors.otp ? "border-red-500" : "border-gray-300"
                 }`}
                   {...register("otp",{
                       required: true,
@@ -64,6 +68,11 @@ const Verifyotp = () => {
                       }
                   })}>
               </input>
+              {
+                errors.otp && <p>
+                  {errors.otp.message}
+                </p>
+              }
 
               <Button label="submit" type="submit" disableState={isSubmitting}/>
               <Button label="reset" type="reset" disableState={isSubmitting} clickHandler={() => reset()}/>

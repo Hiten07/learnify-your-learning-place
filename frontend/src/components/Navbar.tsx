@@ -35,13 +35,16 @@ const Navbar = () => {
               </Link>
               <button onClick={logout} className="text-white px-4" style={{backgroundColor: "white", color: "#1E88E5"}}>
                 Logout
-              </button> 
-              <Link
-                to="/profile"
-                className="text-gray-700 hover:text-blue-600 transition"
-              >
-                <FontAwesomeIcon icon={faUser} size="lg" />
-              </Link>
+              </button>
+            
+              <div>
+                <Link
+                  to="/profile"
+                  className="text-gray-700 hover:text-blue-600 transition"
+                >
+                  <FontAwesomeIcon icon={faUser} size="lg"/>
+                </Link>
+              </div>
           
             </>
           ) : (

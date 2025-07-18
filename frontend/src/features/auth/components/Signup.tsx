@@ -3,6 +3,8 @@ import { SubmitHandler, useForm, } from "react-hook-form";
 import { useNavigate } from 'react-router-dom';
 import Button from "../../../components/Button/Button";
 import authApis from "../../../api/auth.api";
+import { signupSchema } from "../models/Signup.zod";
+import {zodResolver} from "@hookform/resolvers/zod"
 import "../../../App.css";
 
 
@@ -18,7 +20,9 @@ type Inputs = {
 const Signup = () => {
     
     const [userData,setUserdata] = useState({});
-    const { register,handleSubmit,reset,formState: {errors,isSubmitting} } = useForm();
+    const { register,handleSubmit,reset,formState: {errors,isSubmitting} } = useForm({
+      resolver: zodResolver(signupSchema)
+    });
     const navigate = useNavigate();
 
   useEffect(() => {

@@ -2,11 +2,13 @@ import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
 import {coursesgetApis} from "../../../api/course.api";
 import ReactPlayer from "react-player";
+import { Loader } from "../../../utils/Loader";
 
 const Coursematerial = () => {
+  const [courseData, setCourseData] = useState(null);
+  const [loading,setLoading] = useState(false);
   const { courseid, } = useParams();
   const coursedetails = useLocation();
-  const [courseData, setCourseData] = useState(null);
 
   const queryParams = {
     courseid: courseid,
@@ -14,16 +16,21 @@ const Coursematerial = () => {
 
   useEffect(() => {
     const fetchCourse = async () => {
+      try {
+      setLoading(true);
       const res = await coursesgetApis(`/coursecontent`, queryParams);
       if (res) {
         setCourseData(res);
       }
-    };
-
+    } catch (error) {
+      console.log(error)
+    }
+    finally {
+      setLoading(false);
+    }
+  };
     fetchCourse();
   }, []);
-
-  if (!courseData) return <p>Loading...</p>;
 
   return (
     <div className="p-6 pt-24">
@@ -32,9 +39,12 @@ const Coursematerial = () => {
 
       <p className="text-sm font-semibold mb-4">Duration : {coursedetails.state.duration}</p>
       <p className="text-sm font-semibold mb-4">Price : {coursedetails.state.price}</p>
-    
 
-      {courseData.map((module) => (
+      {loading && <Loader/>}
+
+      {!loading && !courseData && <p className="py-4 text-3xl lg:text-4xl font-extrabold font-bold text-blue-600 text-center">No course material found, please add modules and lessons</p>}    
+
+      {courseData && courseData.map((module) => (
         <div key={module.id} className="mb-6 p-4 border rounded-lg">
           <h3 className="text-lg font-semibold">
             Module Title: {module.title}

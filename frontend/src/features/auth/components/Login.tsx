@@ -1,14 +1,16 @@
 import { ReactNode, useState,useEffect } from "react";
 import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
+import { SubmitHandler, useForm } from "react-hook-form";
 import Button from "../../../components/Button/Button";
 import authApis from "../../../api/auth.api";
 import 'react-toastify/dist/ReactToastify.css';
-// import Cookies from "js-cookie";
-// import Navbar from "../../../components/Navbar";
+import { loginSchema,loginFormValidations } from "../models/Login.zod";
+import { zodResolver } from "@hookform/resolvers/zod";
+import { Loader } from "../../../utils/Loader";
 
 const Login = () => {
   const [logindata, setLogindata] = useState({});
+  const [loading,setLoading] = useState(false);
   const navigate = useNavigate();
 
   useEffect(() => {
@@ -17,6 +19,7 @@ const Login = () => {
     }
     const registerUser = async () => {
       try {
+        setLoading(true);
         const userDetailsToken = await authApis(
           "/users/login",
           logindata
@@ -25,27 +28,30 @@ const Login = () => {
           // navigate("/dashboard",{
           //   state: Cookies.get("authtoken")
           // })
-
+          setLoading(false)
           window.location.href = "/dashboard";
         }
+        
       } catch (error) {
         console.log(error);
+      }
+      finally {
+        setLoading(false);
       }
     };
     registerUser();
   }, [logindata,navigate]);
 
-  function handleSubmitform(data: any) {
-    console.log("Login data:", logindata);
-    setLogindata(data);
+  const handleSubmitform : SubmitHandler<loginFormValidations> = (data: any) => {
+    
+    const {confirmPassword,...newData} = data;
+    console.log(confirmPassword)
+    setLogindata(newData)
   }
 
-  const {
-    register,
-    reset,
-    handleSubmit,
-    formState: { errors, isSubmitting },
-  } = useForm();
+  const { register, reset, handleSubmit, formState: { errors, isSubmitting }} = useForm({
+    resolver: zodResolver(loginSchema)
+  });
 
   return (
     <div
@@ -57,6 +63,7 @@ const Login = () => {
           Login
         </h2>
 
+        {loading && <Loader/>}
         <div>
           <label className="block text-sm font-medium mb-1">Email:</label>
           <input
@@ -87,7 +94,7 @@ const Login = () => {
             type="password"
             placeholder="Enter your password"
             className={`w-full px-3 py-2 border mb-4 ${
-              errors.email ? "border-red-500" : "border-gray-300"
+              errors.password ? "border-red-500" : "border-gray-300"
             }`}
           />
           {errors.password && (
@@ -95,6 +102,25 @@ const Login = () => {
               {errors.password.message as ReactNode}
             </p>
           )}
+
+                  <label className="block text-gray-700 font-semibold mb-1">
+                    Confirm Password:
+                  </label>
+                  <input
+                    {...register("confirmPassword", {
+                      required: "Confirm Password is required",
+                    })}
+                    type="password"
+                    placeholder="Confirm password"
+                    className={`w-full px-3 py-2 border mb-4 ${
+                      errors.confirmPassword ? "border-red-500" : "border-gray-300"
+                    }`}
+                  />
+                  {errors.confirmPassword && (
+                    <p className="text-red-500 text-sm">
+                      {errors.confirmPassword.message as ReactNode}
+                    </p>
+                  )}
         </div>
 
         <label className="block text-gray-700 font-semibold mb-1">Role :</label>
@@ -103,9 +129,16 @@ const Login = () => {
           className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
           {...register("role")}
         >
+          <option defaultValue={"role"}>select your role</option>
           <option value="student">student</option>
           <option value="instructor">Instructor</option>
         </select>
+        {errors.role && (
+                    <p className="text-red-500 text-sm">
+                      {errors.role.message as ReactNode}
+                    </p>
+                  )}  
+
 
         <Button label="login" type="submit" disableState={isSubmitting}/>
         <Button label="reset" type="reset" disableState={isSubmitting} clickHandler={() => reset()}/>
