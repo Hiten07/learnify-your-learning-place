@@ -7,7 +7,7 @@ export const passwordValidation = new RegExp(
 export const loginSchema = z.object({
     email: z.
         string("please enter a valid email")
-        .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/)
+        .regex(/^[^\s@]+@[^\s@]+\.[^\s@]+$/,"enter valid email address")
         .email("Invalid email address"),
 
     password: z
@@ -15,7 +15,7 @@ export const loginSchema = z.object({
             .min(8, 'Password must be at least 8 characters long'),
     confirmPassword: z
                     .string()
-                    .min(4),
+                    .min(4,'Password must be at least 8 characters long'),
     role: z.string().min(1,'role must be minimum one')
 }).refine(
     (values) => {

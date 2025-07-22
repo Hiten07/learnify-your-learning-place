@@ -22,7 +22,7 @@ export const signupSchema = z.object({
             .regex(passwordValidation,{
                 message: 'Your password is not valid, it must contains 1 upper case, 1 lower case and 1 special character',
               }),
-  role: z.array(z.string()).min(1,'role must be minimum one')
+  role: z.string().min(1,'role must be minimum one')
 });
 
 export type signupFormInputs = z.infer<typeof signupSchema>;

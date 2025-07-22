@@ -33,7 +33,6 @@ const Dashboard = () => {
           totalPages: response.data.totalPages,
         });
       }
-      console.log(response);
 
       setLoading(false);
     } catch (error) {

@@ -4,13 +4,14 @@ import Button from "../../../components/Button/Button";
 import { useEffect, useState } from "react";
 import authApis from "../../../api/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { verifyOtpSchema } from "../models/Verifyotp";
+import { verifyOtpSchema } from "../models/index";
+// import { showToastMessage } from "../../../utils/Toast.errors";
 
 type otpType = {
   otp?: string;
 }
 
-const Verifyotp = () => {
+export const Verifyotp = () => {
 
     const navigate = useNavigate();
     const token = useLocation();
@@ -25,14 +26,18 @@ const Verifyotp = () => {
         return
       }
 
-      const verifyOtp = async () => {
-        const userDetailsToken = await authApis("/users/register/verify",otp);
-
-        if(userDetailsToken) {
-          navigate("/users/login");
-        }
-      } 
-      verifyOtp();
+      try {
+        const verifyOtp = async () => {
+          const userDetailsToken = await authApis("/users/register/verify",otp);
+  
+          if(userDetailsToken) {
+            navigate("/users/login");
+          }
+        } 
+        verifyOtp();
+      } catch (error) {
+        console.log(error)
+      }
     },[otp,navigate])
 
     const handleSubmitform: SubmitHandler<otpType> = async (data) => {
@@ -80,6 +85,4 @@ const Verifyotp = () => {
             </form>
     </div>
   )
-}
-
-export default Verifyotp
+};

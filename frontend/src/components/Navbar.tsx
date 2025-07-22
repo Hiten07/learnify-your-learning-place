@@ -1,11 +1,30 @@
 import { useContext } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { AuthContext } from "./Createcontext";
+import { AuthContext } from "../hooks/Createcontext";
 const Navbar = () => {
   const { authToken, logout } = useContext(AuthContext);
 
+const location = useLocation();
+const currentpath = location.pathname;
+  const path = [
+      {
+        path: "/dashboard",
+        isActive : false,
+        label: "dashboard"
+      },
+      {
+        path: "/courses/add-course",
+        isActive : false,
+        label: "Add course"
+      },
+      {
+        path: "/courses/history",
+        isActive : false,
+        label: "history"
+      },
+  ]
   return (
     <nav className="shadow-md sticky top-0 z-50 bg-black-90">
       <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
@@ -14,38 +33,31 @@ const Navbar = () => {
         </div>
         <div className="hidden md:flex space-x-32">
           {authToken ? (
-            <>
+           <>
+            {
+             path.map(({path: itemPath,label}) => {
+              const isActive = currentpath === itemPath;
+              return (
               <Link
-                to="/dashboard"
-                className="text-gray-700 hover:text-blue-600 transition"
+                to={itemPath}
+                className={`text-gray-700 hover:text-blue-600 transition ${isActive ? "bg-blue-100 text-white px-5 rounded-lg" : "bg-dark-blue-600 text-white" }`} 
               >
-                Dashboard
+                {label}
               </Link>
-              <Link
-                to="/courses/add-course"
-                className="text-gray-700 hover:text-blue-600 transition"
-              >
-                Add Course
-              </Link>
-              <Link
-                to="/history"
-                className="text-gray-700 hover:text-blue-600 transition"
-              >
-                History
-              </Link>
-              <button onClick={logout} className="text-white px-4" style={{backgroundColor: "white", color: "#1E88E5"}}>
-                Logout
-              </button>
-            
-              <div>
-                <Link
-                  to="/profile"
+              ) 
+            })}
+
+            <button onClick={logout} className="text-white px-4" style={{backgroundColor: "white", color: "#1E88E5"}}>
+            Logout
+          </button>
+
+          <Link
+                  to="/instructor/profile"
                   className="text-gray-700 hover:text-blue-600 transition"
                 >
                   <FontAwesomeIcon icon={faUser} size="lg"/>
                 </Link>
-              </div>
-          
+
             </>
           ) : (
             <>

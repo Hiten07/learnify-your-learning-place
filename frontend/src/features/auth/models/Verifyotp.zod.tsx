@@ -2,7 +2,7 @@ import {z} from "zod";
 
 export const verifyOtpSchema = z.object({
     otp: z
-        .number()
+        .string()
         .min(6,{
             message: "otp must be 6 digits"
     })

@@ -8,7 +8,7 @@ const coursesgetApis = async (endpoint: string,queryParams: AxiosRequestConfig['
         const result = await axiosinstance.get(endpoint,
         {
             // validateStatus: () => true,
-            params: queryParams,
+            params: queryParams,    
             headers: {
                 'Content-Type': 'application/json',
             },
@@ -26,7 +26,7 @@ const coursesgetApis = async (endpoint: string,queryParams: AxiosRequestConfig['
     }   
 }
 
-const coursespostApis = async (endpoint: string,data,queryParams: AxiosRequestConfig['params']) => {
+const coursespostApis = async (endpoint: string,data: unknown,queryParams: AxiosRequestConfig['params']) => {
     try {
         const result = await axiosinstance.post(endpoint,data,
         {

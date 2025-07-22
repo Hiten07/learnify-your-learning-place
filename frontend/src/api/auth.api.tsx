@@ -43,12 +43,13 @@ const authApis = async (endpoint: string, data: unknown) => {
 
     if (result.data.token) {
       return result.data;
-    } else {
+    } 
+    else {
       return result;
     }
   } catch (error) {
 
-    if (error?.response.data) {
+    if (error?.response?.data) {
       return;
     }
     showToastMessage("Internal server error", 500);

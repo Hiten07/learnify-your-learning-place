@@ -1,7 +1,6 @@
 import { Routes, Route } from "react-router-dom";
-import Signup from "./components/Signup";
-import Verifyotp from "./components/Verifyotp";
-import Login from "./components/Login";
+import  {Signup,Login,Verifyotp} from "./components/index";
+
 import { FC } from "react";
 
 export const AuthRoutes: FC = () => {

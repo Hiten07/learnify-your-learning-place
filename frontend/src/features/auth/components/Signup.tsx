@@ -3,9 +3,10 @@ import { SubmitHandler, useForm, } from "react-hook-form";
 import { useNavigate } from 'react-router-dom';
 import Button from "../../../components/Button/Button";
 import authApis from "../../../api/auth.api";
-import { signupSchema } from "../models/Signup.zod";
+import { signupSchema } from "../models/index";
 import {zodResolver} from "@hookform/resolvers/zod"
 import "../../../App.css";
+// import { showToastMessage } from "../../../utils/Toast.errors";
 
 
 type Inputs = {
@@ -17,7 +18,7 @@ type Inputs = {
   role?: string
 }
 
-const Signup = () => {
+export const Signup = () => {
     
     const [userData,setUserdata] = useState({});
     const { register,handleSubmit,reset,formState: {errors,isSubmitting} } = useForm({
@@ -33,14 +34,15 @@ const Signup = () => {
     const registerUser = async () => {
         try {
             const userDetailsToken = await authApis("/users/register",userData);
-            console.log(userDetailsToken)
+
             if(userDetailsToken) {
                 navigate("/users/verify-otp",{
                     state: userDetailsToken.token
                 })
             }
         } catch (error) {
-            console.log(error);
+          // showToastMessage("something went wrong",501);
+          console.log(error)
         }
     }
     registerUser();
@@ -48,12 +50,12 @@ const Signup = () => {
     
   const handleSubmitform: SubmitHandler<Inputs> = async (data) => {
       // await new Promise((resolve) => setTimeout(resolve,5000))
-      const role = data.role 
-      data.role = role?.split() as string[];
+      // const role = data.role 
+      data.role = data.role?.split(",") ;
       setUserdata(data);
    }    
   return (
-    <div className="bg-dark-red p-12 max-w-md mx-auto shadow-md bg-dark-gray mt-20"  style={{backgroundColor : "rgb(245, 245, 245)"}}>
+    <div className="bg-dark-red p-12 max-w-md mx-auto shadow-md bg-dark-gray mt-15"  style={{backgroundColor : "rgb(245, 245, 245)"}}>
     <form onSubmit={handleSubmit(handleSubmitform)}>
     <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">
           Sign up        
@@ -63,7 +65,7 @@ const Signup = () => {
       </label>
       <input
         className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          errors.title ? "border-red-500" : "border-gray-300"
+          errors.firstname ? "border-red-500" : "border-gray-300"
         }`}
         {...register("firstname", {
           required: true,
@@ -168,8 +170,13 @@ const Signup = () => {
         <option value="instructor">Instructor</option>
       </select>
 
+      {errors.role && <p>{errors.role.message}</p>}
+
       <Button label="submit" type="submit" disableState={isSubmitting}/>
       <Button label="reset" type="reset" disableState={isSubmitting} clickHandler={() => reset()}/>
+
+      <p className="mt-5 text-center font-semi-bold">Already have an account ? <a href="/users/login">Login</a></p>
+
 {/*   
       <button
         type="submit" 
@@ -183,5 +190,3 @@ const Signup = () => {
   
   )
 }
-
-export default Signup;

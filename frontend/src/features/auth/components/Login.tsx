@@ -4,11 +4,12 @@ import { SubmitHandler, useForm } from "react-hook-form";
 import Button from "../../../components/Button/Button";
 import authApis from "../../../api/auth.api";
 import 'react-toastify/dist/ReactToastify.css';
-import { loginSchema,loginFormValidations } from "../models/Login.zod";
+import { loginSchema,loginFormValidations } from "../models/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "../../../utils/Loader";
+import { showToastMessage } from "../../../utils/Toast.errors";
 
-const Login = () => {
+export const Login = () => {
   const [logindata, setLogindata] = useState({});
   const [loading,setLoading] = useState(false);
   const navigate = useNavigate();
@@ -33,16 +34,18 @@ const Login = () => {
         }
         
       } catch (error) {
-        console.log(error);
+        console.log(error)
+        showToastMessage("something went wrong",501);
       }
       finally {
+       
         setLoading(false);
       }
     };
     registerUser();
   }, [logindata,navigate]);
 
-  const handleSubmitform : SubmitHandler<loginFormValidations> = (data: any) => {
+  const handleSubmitform : SubmitHandler<loginFormValidations> = (data: loginFormValidations) => {
     
     const {confirmPassword,...newData} = data;
     console.log(confirmPassword)
@@ -68,7 +71,7 @@ const Login = () => {
           <label className="block text-sm font-medium mb-1">Email:</label>
           <input
             className={`w-full px-3 py-2 border rounded mb-4 ${
-              errors.title ? "border-red-500" : "border-gray-300"
+              errors.email ? "border-red-500" : "border-gray-300"
             }`}
             {...register("email", {
               required: "Email is required",
@@ -137,14 +140,14 @@ const Login = () => {
                     <p className="text-red-500 text-sm">
                       {errors.role.message as ReactNode}
                     </p>
-                  )}  
-
+                  )} 
 
         <Button label="login" type="submit" disableState={isSubmitting}/>
         <Button label="reset" type="reset" disableState={isSubmitting} clickHandler={() => reset()}/>
-      </form>
+<p className="mt-5 text-center font-semi-bold">Don't have an account ? <a href="/users/register">Sign up</a></p>
+
+              </form>
     </div>
   );
 };
 
-export default Login;
