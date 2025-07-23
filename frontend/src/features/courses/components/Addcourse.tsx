@@ -3,7 +3,7 @@ import { coursespostApis } from "../../../api/course.api";
 import { courseSchema } from "../models/Courseschema.zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import { CourseForm } from "../models/Courseschema.zod";
-import { useState } from "react";
+import { ReactNode, useState } from "react";
 import { Loader } from "../../../utils/Loader";
 
 // useFormContext => custom hook that allows you to access the state and methods provided by formprovider
@@ -69,7 +69,7 @@ const LessonFields = ({ moduleIndex }: { moduleIndex: number }) => {
           />
              {errors.modules?.[moduleIndex]?.lessons?.[lessonIndex]?.video && (
             <p className="text-red-500 text-sm">
-              {errors?.modules?.[moduleIndex].lessons?.[lessonIndex].video?.message}
+              {errors?.modules?.[moduleIndex].lessons?.[lessonIndex].video?.message as ReactNode}
             </p>
           )}
           
@@ -84,7 +84,7 @@ const LessonFields = ({ moduleIndex }: { moduleIndex: number }) => {
           />
              {errors.modules?.[moduleIndex]?.lessons?.[lessonIndex]?.pdf && (
             <p className="text-red-500 text-sm">
-              {errors.modules?.[moduleIndex]?.lessons[lessonIndex].pdf?.message}
+              {errors.modules?.[moduleIndex]?.lessons[lessonIndex].pdf?.message as ReactNode}
             </p>
           )}
 

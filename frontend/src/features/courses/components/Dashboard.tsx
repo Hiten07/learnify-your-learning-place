@@ -1,6 +1,7 @@
 import { useEffect, useState,useCallback } from "react";
 import {coursesgetApis} from "../../../api/course.api";
 import { useNavigate } from "react-router-dom";
+import { coursedetails } from "../types/courses.types";
 
 
 const Dashboard = () => {
@@ -22,9 +23,11 @@ const Dashboard = () => {
 
 
   const fetchAllInstructorCourses = useCallback(async () => {
-    try {
+    try 
+    {
       setLoading(true);
       const response = await coursesgetApis("/courses/mycourses", queryParams);
+     
       if (response.data.courses.length > 0) {
         setCoursedata(response.data.courses);
         setTotalCourseCreated(response.data.totalItems);
@@ -35,13 +38,14 @@ const Dashboard = () => {
       }
 
       setLoading(false);
-    } catch (error) {
+    } 
+    catch (error) {
       console.error(error);
       setLoading(false);
     }
   },[queryParams])
 
-  const Viewcoursematerial = async (coursedetails) => {
+  const Viewcoursematerial = async (coursedetails: coursedetails) => {
     const course = {
       coursename: coursedetails.coursename,
       coursedescription: coursedetails.description,
@@ -106,7 +110,7 @@ const Dashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {coursedata.map((course) => (
+            {coursedata.map((course: coursedetails) => (
               <div
                 className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300"
                 key={course.courseid}
@@ -136,6 +140,7 @@ const Dashboard = () => {
 
         
           </div>
+          
           <div className="pagination flex content-center justify-center">
               <button
                 className="mt-8 w-24 text-white font-semibold py-2 rounded cursor-pointer" style={{backgroundColor: "darkblue-600"}}
@@ -144,11 +149,13 @@ const Dashboard = () => {
               >
                 Prev
               </button>
+
               <span
                 className="font-semibold mt-12 m-5" 
               >
                 Page {pagination.page} of {pagination.totalPages}
               </span>
+              
               <button
                 className="mt-8 w-24 text-white font-semibold py-2 rounded cursor-pointer" style={{backgroundColor: "darkblue-600"}}
                 disabled={pagination.page >= pagination.totalPages}
@@ -156,7 +163,7 @@ const Dashboard = () => {
               >
                 Next
               </button>
-            </div>
+          </div>
         </>
       )}
     </div>

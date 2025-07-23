@@ -2,6 +2,7 @@ import { useEffect, useState } from "react";
 import { Loader } from "../../../utils/Loader";
 import { coursesgetApis } from "../../../api/course.api";
 import DataTable from "react-data-table-component";
+import { Coursepurchasehistory,Enrolledcoursesandusersdetails } from "../types/courses.types";
 
 const Coursehistory = () => {
   const [loading, setLoading] = useState(false);
@@ -24,9 +25,9 @@ const Coursehistory = () => {
     fetchCourse();
   }, []);
 
-
-  const tableData = apiData.flatMap((course) => 
-    course.enrolledcourses?.map((enrolled) => ({
+  console.log(apiData)
+  const tableData = apiData.flatMap((course: Coursepurchasehistory) => 
+    course.enrolledcourses?.map((enrolled: Enrolledcoursesandusersdetails) => ({
       coursename: course.coursename,
       description: course.description,
       enrolleddate: enrolled.enrolleddate,
@@ -54,12 +55,12 @@ const Coursehistory = () => {
     },
     {
       name: "Student Name",
-      selector: (row: { enrolled: string}) => `${row.firstname} ${row.lastname}`,
+      selector: (row: { firstname: string,lastname: string}) => `${row.firstname} ${row.lastname}`,
       sortable: true,
     },
     {
       name: "Email",
-      selector: (row: { coursename: string}) => row.email,
+      selector: (row: { email: string}) => row.email,
       sortable: true,
     },
   ];

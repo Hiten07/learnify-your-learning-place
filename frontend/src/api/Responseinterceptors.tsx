@@ -12,6 +12,7 @@ export const axiosinstance = axios.create({
 
 axiosinstance.interceptors.request.use(
     (config) => {
+      console.log(config)
     if(config.url == "/users/login" || config.url == '/users/register' || config.url == "/users/verify-otp") {
         return config;
     }
@@ -23,7 +24,7 @@ axiosinstance.interceptors.request.use(
         showToastMessage("Please login your account...", 401);
         window.location.href = "/users/login"; 
       }
-      console.log(config)
+
       return config;
     },
     (error) => {
@@ -46,22 +47,22 @@ axiosinstance.interceptors.response.use(
       return response;
     },
     (error) => {
-      const data = error.response.data;
-    
-      if (data?.message && data?.status && (data?.status === 401 || data?.status === 402 || data?.status === 403 || data?.status === 404)) {
-        toast.error(data.message);
+      const responsedata = error.response;
+
+      if (responsedata.data?.message && responsedata?.status && (responsedata?.status === 401 || responsedata?.status === 402 || responsedata?.status === 403 || responsedata?.status === 404)) {
+        toast.error(responsedata.data.message);
       }
-      else if (data?.message && data?.status && (data?.status === 500 || data?.status === 500)) {
+      else if (responsedata.data?.message && responsedata?.status && (responsedata?.status === 500 || responsedata?.status === 500)) {
         toast.error('Server error - try again later');
       } 
-      else if(data?.message && !data.status) {
+      else if(responsedata.data?.message && !responsedata.status) {
         //  validation error for any input
-        toast.error(data.message); 
+        toast.error(responsedata.data.message); 
       }
-      else {
+      else  {
         toast.info("internal server error");
       }
   
-      return Promise.reject(data);
+      return Promise.reject(responsedata);
     }
   );

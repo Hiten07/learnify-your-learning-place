@@ -1,27 +1,35 @@
-import { useState, useEffect, useMemo, useCallback } from 'react';
+import { useState, useEffect, useMemo, useCallback,ReactNode } from 'react';
+import Getrolefromtoken from '../utils/Getrolefromtoken';
 import { AuthContext } from './Createcontext';
 import Cookies from 'js-cookie';
 
-export const AuthProvider = ({children}) => {
-  const [authToken, setAuthToken] = useState<string | null>(Cookies.get('authtoken') as string | null);
+interface MyContextProviderProps {
+  children: ReactNode; 
+}
 
+export const AuthProvider = ({children}: MyContextProviderProps) => {
+  const [authToken, setAuthToken] = useState<string | null>(Cookies.get('authtoken') as string | null);
+  const [role,setRole] = useState<string | null>(null)
+  
   // Check for token when the app loads
   useEffect(() => {
     const token = Cookies.get('authtoken');
     if (token) {
       setAuthToken(token);
+      setRole(Getrolefromtoken(token))
     }
   }, []);
 
   const logout = useCallback(() => {
     Cookies.remove('authtoken');
     setAuthToken(null);
+    setRole(null)
     window.location.href = "/users/login";
   },[]);
 
   const value = useMemo(() => {
-    return {authToken,setAuthToken,logout}
-  },[authToken,setAuthToken,logout])
+    return {authToken,setAuthToken,logout, role,setRole}
+  },[authToken,setAuthToken,logout,role])
 
   return (
     <AuthContext.Provider value={value}>

@@ -48,11 +48,12 @@ const authApis = async (endpoint: string, data: unknown) => {
       return result;
     }
   } catch (error) {
-
     if (error?.response?.data) {
       return;
     }
-    showToastMessage("Internal server error", 500);
+    if(!error) {
+      showToastMessage("Internal server error", 500);
+    }
   }
 };
 export default authApis;

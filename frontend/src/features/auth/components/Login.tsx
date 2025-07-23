@@ -1,4 +1,4 @@
-import { ReactNode, useState,useEffect } from "react";
+import { ReactNode, useState,useEffect,useContext } from "react";
 import { useNavigate } from "react-router-dom";
 import { SubmitHandler, useForm } from "react-hook-form";
 import Button from "../../../components/Button/Button";
@@ -8,11 +8,14 @@ import { loginSchema,loginFormValidations } from "../models/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "../../../utils/Loader";
 import { showToastMessage } from "../../../utils/Toast.errors";
+import { AuthContext } from "../../../hooks/Createcontext";
+import Getrolefromtoken from "../../../utils/Getrolefromtoken";
 
-export const Login = () => {
+export const Login = () => {  
   const [logindata, setLogindata] = useState({});
   const [loading,setLoading] = useState(false);
   const navigate = useNavigate();
+  const { role,setRole,setAuthToken } = useContext(AuthContext);
 
   useEffect(() => {
     if (Object.keys(logindata).length === 0) {
@@ -25,17 +28,25 @@ export const Login = () => {
           "/users/login",
           logindata
         );
+
         if (userDetailsToken) {
-          // navigate("/dashboard",{
-          //   state: Cookies.get("authtoken")
-          // })
           setLoading(false)
-          window.location.href = "/dashboard";
+          setAuthToken(userDetailsToken.token);
+          setRole(Getrolefromtoken(userDetailsToken.token))
+
+          if(role === "instructor") {
+            navigate("/dashboard")
+          }
+          else if (role === "student") {
+            navigate("/student/home")
+          }
         }
         
-      } catch (error) {
+      } 
+      
+      catch (error) {
         console.log(error)
-        showToastMessage("something went wrong",501);
+        // showToastMessage("something went wrong",501);
       }
       finally {
        
@@ -43,12 +54,12 @@ export const Login = () => {
       }
     };
     registerUser();
-  }, [logindata,navigate]);
+  }, [logindata,navigate,role,setAuthToken,setRole]);
 
   const handleSubmitform : SubmitHandler<loginFormValidations> = (data: loginFormValidations) => {
     
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const {confirmPassword,...newData} = data;
-    console.log(confirmPassword)
     setLogindata(newData)
   }
 

@@ -3,9 +3,10 @@ import { useEffect, useState } from "react";
 import { coursesgetApis } from "../../../api/course.api";
 import ReactPlayer from "react-player";
 import { Loader } from "../../../utils/Loader";
+import { Coursemodule, CourseModulelessons } from "../types/courses.types";
 
 const Coursematerial = () => {
-  const [courseData, setCourseData] = useState(null);
+  const [courseData, setCourseData] = useState([]);
   const [loading, setLoading] = useState(false);
   const { courseid } = useParams();
   const coursedetails = useLocation();
@@ -56,8 +57,8 @@ const Coursematerial = () => {
       )}
 
       {courseData &&
-        courseData.map((module) => (
-          <div key={module.id} className="mb-6 p-4 border rounded-lg">
+        courseData.map((module: Coursemodule) => (
+          <div key={module.id} className="mb-16 p-4 border rounded-lg">
             <h3 className="text-lg font-semibold">
               Module Title: {module.title}
             </h3>
@@ -65,13 +66,13 @@ const Coursematerial = () => {
               Description: {module.description}
             </p>
 
-            <h4 className="text-md font-medium">Lessons</h4>
+            <h4 className="text-lg mb-5 font-bold text-gray-700 text-2xl">Lessons</h4>
 
             <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-6">
-              {module.lessons?.map((lesson) => (
+              {module.lessons?.map((lesson: CourseModulelessons) => (
                 <div
                   key={lesson.id}
-                  className="bg-white p-4 border rounded-lg shadow-lg"
+                  className="max-w-sm bg-white border border-gray-200 rounded-lg shadow-sm dark:bg-gray-800 dark:border-gray-700 bg-white p-4 shadow-lg"
                 >
                   {lesson.videoUrl && (
                     <div className="mb-2">
@@ -83,6 +84,13 @@ const Coursematerial = () => {
                       />
                     </div>
                   )}
+                  <h5 className="font-semibold text-lg mb-3 text-2xl text-gray-700 dark:text-gray-400">
+                    Lesson Title: {lesson.title}
+                  </h5>
+
+                  <p className="text-gray-600 font-normal  mb-3">
+                    Description: {lesson.description}
+                  </p>
 
                   {lesson.fileUrl && (
                     <a
@@ -95,14 +103,6 @@ const Coursematerial = () => {
                     </a>
                   )}
 
-                  <h5 className="font-semibold text-lg">
-                    Lesson Title: {lesson.title}
-                  </h5>
-
-                  <p className="text-gray-600 mb-2">
-                    Description: {lesson.description}
-                  </p>
-                  
                 </div>
               ))}
             </div>

@@ -50,8 +50,7 @@ export const Signup = () => {
     
   const handleSubmitform: SubmitHandler<Inputs> = async (data) => {
       // await new Promise((resolve) => setTimeout(resolve,5000))
-      // const role = data.role 
-      data.role = data.role?.split(",") ;
+      // data.role = data.role?.split("") as string[];
       setUserdata(data);
    }    
   return (

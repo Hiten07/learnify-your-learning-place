@@ -2,7 +2,6 @@ import 'react-toastify/dist/ReactToastify.css';
 import {toast} from "react-toastify";
 
 export const showToastMessage = (msg: string,resultstatus: number) => {
-    console.log(resultstatus)
     switch (resultstatus) {
         case 200:
             toast.success(msg, {

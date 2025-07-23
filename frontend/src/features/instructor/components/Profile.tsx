@@ -1,4 +1,4 @@
-import { useEffect, useState } from "react"
+import { ReactNode, useEffect, useState } from "react"
 import { coursesgetApis } from "../../../api/course.api"
 
 
@@ -16,7 +16,7 @@ const Profile = () => {
     },[])
   return (
     <div>
-      <h1 className="p-10 pt-50">{profile}</h1>
+      <h1 className="p-10 pt-50">Hello, {profile as ReactNode}</h1>
     </div>
   )
 }
