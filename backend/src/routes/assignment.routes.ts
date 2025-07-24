@@ -32,7 +32,7 @@ router.put(
 );
 
 router.post(
-  "/:courseid/assignments/:assignmentid",
+  "/submit/assignment",
   upload.single("submissionpdf"),
   assignmentController.submitAssignment
 );

@@ -1,5 +1,5 @@
 import { course } from "../models/course";
-import { Op } from "sequelize";
+import {  Op } from "sequelize";
 import { courseDetails, moduleDetails, assignmentObj, submissionObj } from "../types/customtypes";
 import { paginationData } from "../types/interfaces";
 import { coursemodule } from "../models/coursemodule";
@@ -9,7 +9,7 @@ import { user } from "../models/user";
 import { addDays } from "date-fns";
 import { lessons } from "../models/lessons";
 import { submission } from "../models/submissions";
-import { sequelize } from "../config/database";
+import { assignment } from "../models/assignment";
 
 
 type Lesson = {
@@ -37,7 +37,7 @@ export const courseRepositories = {
   },
 
   async findInstructorCoursesHistory(instructorid: number) {
-      return course.findAll({
+      return course.findAndCountAll({
         where: {
           instructorid: instructorid
         },
@@ -57,6 +57,30 @@ export const courseRepositories = {
         }
        ]
       })
+  },
+
+  async getAllCoursesForStudent(paginationData: paginationData) {
+
+    return course.findAndCountAll({
+        where: {
+        [Op.or]: [
+          {
+            coursename: {
+              [Op.like]: `%${paginationData.search}%`,
+            },
+          },
+          {
+            description: {
+              [Op.like]: `%${paginationData.search}%`,
+            },
+          },
+        ],
+      },
+        order: [[paginationData.sortBy, paginationData.sortType]],
+        limit: paginationData.limit,
+        offset: paginationData.offset,
+      },
+    );
   },
 
   async findCourseCreatedByInstructor(courseid: number, instructorid: number) {
@@ -202,6 +226,31 @@ export const courseRepositories = {
 
   async addLessonForModule(lessondata: lessonsObj) {
     return lessons.create(lessondata);
+  },
+
+  async getAllCoursesAssignments(userid: number) {
+    return enrolled.findAll({
+      where: {
+        userid: userid
+      },
+      attributes: ["userid","courseid","enrolleddate","validuntildate"],
+      include: [
+        {
+          model: course,
+          as: "enrolledcourses",
+          required: true,
+          attributes: ["coursename","description","instructorid"],
+          include:[
+            {
+              required: true,
+              model: assignment,
+              as: "assignments",
+              attributes: ["id","title","description","duedate","assignmentUrl","createdAt"],
+            }
+          ]
+        }
+      ]
+    })
   },
 
   async updateSubmissionRemarks(

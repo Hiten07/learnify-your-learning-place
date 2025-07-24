@@ -6,7 +6,11 @@ const router = Router();
 
 router.use(verifyToken(['student']));
 
+router.get('/allcourses',courseController.getStudentAllCourses);
+
 router.get('/courses',courseController.getStudentCourses);
+
+router.get('/assignments',courseController.getStudentallAssignments);
 
 router.get('/courses/:courseid',courseController.getCourseDetailsById);
 

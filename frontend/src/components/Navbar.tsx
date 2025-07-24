@@ -47,7 +47,7 @@ const Navbar = () => {
                 My courses
               </Link>
               <Link
-                to="/assignments/myassignments"
+                to="/student/assignments"
                 className="text-gray-700 hover:text-blue-600 transition"
               >
                 My assignments

@@ -48,5 +48,5 @@ export class enrolled extends Model {
   users!: user;
 
   @BelongsTo(() => course)
-  courses!: course;
+  enrolledcourses!: course;
 }

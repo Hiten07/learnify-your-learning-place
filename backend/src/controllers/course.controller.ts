@@ -3,7 +3,7 @@ import { courseService } from "../services/course.service";
 import { customError } from "../errors/customError";
 import { catchResponse, response } from "../errors/helperError";
 import { assignmentService } from "../services/assignment.service";
-import { paginationData } from "../types/interfaces";
+import { FindAndCountAllType, paginationData } from "../types/interfaces";
 import { paginationresponse } from "../utils/paginationData";
 
 export const courseController = {
@@ -113,6 +113,46 @@ export const courseController = {
     }
   },
 
+  async getStudentAllCourses(req: Request,res: Response) {
+
+    const page = Number(req.query.page) || 1;
+
+    const limit = Number(req.query.pageSize) || 5;
+
+    const offset = (page * limit) - limit;
+
+    const sortBy = (req.query.sortBy as string) || "duration";
+
+    const sortType = req.query.sortType === "asc" ? "ASC" : "DESC";
+
+    const search = (req.query.search as string) || "";
+
+    const paginationData: paginationData = {
+      limit: limit,
+      offset: offset,
+      sortBy: sortBy,
+      sortType: sortType,
+      search: search,
+    };
+  try {
+    if(req.user || req.user!.roles === "student") {
+      const allCourses = await courseService.getAllCourses(paginationData);  
+      const result = paginationresponse(allCourses as FindAndCountAllType, page, limit);
+      response(res,result,"all courses");
+    }
+    else {
+      res.status(401).json({
+        message: "Not allowed"
+      })
+    }
+  } 
+  catch (error) {
+    res.status(500).json({
+      message: "Internal server error",
+    });
+  }
+  },
+
   async enrolledCourses(req: Request, res: Response) {
     try {
       const courseid = parseInt(req.params?.courseid);
@@ -164,6 +204,25 @@ export const courseController = {
       }
     } catch (error) {
       console.log(error);
+      res
+        .status(500)
+        .json({ error: "An error occurred while retrieving assignments" });
+    }
+  },
+
+
+  async getStudentallAssignments(req: Request,res: Response) {
+    try 
+    {
+        const studentId = req.user?.id;
+        const AllAssignments = await courseService.getCoursesAllAssignments(
+         studentId
+        );
+        
+        response(res,AllAssignments,"assignments fetched")
+    } 
+    catch (error) {
+      console.log(error)
       res
         .status(500)
         .json({ error: "An error occurred while retrieving assignments" });

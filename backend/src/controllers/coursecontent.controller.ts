@@ -11,7 +11,7 @@ export const CourseContentController = {
 
     try {
       
-      if (user?.role === "student") {
+      if (user?.roles === "student") {
         const enrolled = await courseService.checkEnrolledStudent(user?.id, courseid);
         if (!enrolled) {
           res.status(403).json({ message: "You are not enrolled in this course" });

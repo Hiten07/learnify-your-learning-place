@@ -61,8 +61,7 @@ export class assignment extends Model {
     field: "updatedAt",
   })
   updatedAt?: Date;
-
-
+  
   @BelongsTo(() => course)
   courses!: course;
 }

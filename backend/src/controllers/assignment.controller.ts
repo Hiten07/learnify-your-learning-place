@@ -129,12 +129,11 @@ export const assignmentController = {
   async submitAssignment(req: Request, res: Response) {
     try {
 
-      const courseid = parseInt(req.params?.courseid);
-      const assignmentid = parseInt(req.params?.assignmentid);
+      const courseid = Number(req.query?.courseid);
+      const assignmentid = Number(req.query?.assignmentid);
       const user = req.user;
-
       const file = req.file;
-
+  
       if (!file) {
         res.status(400).json({ error: "Submission file is required" });
         return;
@@ -143,10 +142,10 @@ export const assignmentController = {
 
       const enrolled = await assignmentService.checkEnrolledStudent(user?.id,courseid);
 
-      if (!enrolled || user?.role !== "student") {
+      if (!enrolled || user?.roles !== "student") {
         res
           .status(403)
-          .json({ error: "You are not authorized to submit this assignment" });
+          .json({ message: "You are not authorized to submit this assignment" });
         return;
       }
 
@@ -156,7 +155,7 @@ export const assignmentController = {
         assignmentid: assignmentid,
         submissionUrl: file.path,
       };
-  
+
       const result2 = await assignmentService.submitAssignment(submission);
       response(res, result2, "Assignment submitted successfully");
 
@@ -174,7 +173,7 @@ export const assignmentController = {
     try {
       // Only instructor or admin can see submissions
 
-      if (user?.role != "instructor") {
+      if (user?.roles != "instructor") {
         res.status(403).json({
           error: "Access denied: only instructor can view submissions",
         });
@@ -207,7 +206,7 @@ export const assignmentController = {
     try {
       // Access control: instructor/admin only
 
-      if (user?.role != "instructor") {
+      if (user?.roles != "instructor") {
         res
           .status(403)
           .json({ error: "Access denied: only instructor can update remarks" });
