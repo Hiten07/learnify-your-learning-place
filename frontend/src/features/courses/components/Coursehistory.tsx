@@ -14,7 +14,7 @@ const Coursehistory = () => {
         setLoading(true);
         const res = await coursesgetApis(`/courses/history`, {});
         if (res) {
-          setApiData(res.data);
+          setApiData(res.data.rows);
         }
       } catch (error) {
         console.error(error);
@@ -25,17 +25,20 @@ const Coursehistory = () => {
     fetchCourse();
   }, []);
 
-  console.log(apiData)
-  const tableData = apiData.flatMap((course: Coursepurchasehistory) => 
-    course.enrolledcourses?.map((enrolled: Enrolledcoursesandusersdetails) => ({
-      coursename: course.coursename,
-      description: course.description,
-      enrolleddate: enrolled.enrolleddate,
-      firstname: enrolled.users?.firstname || "-",
-      lastname: enrolled.users?.lastname || "-",
-      email: enrolled.users?.email || "-",
-    }))
+  console.log(object)
+    let tableData;
+    if(apiData && apiData.length > 0) {
+    tableData = apiData.map((course: Coursepurchasehistory) => 
+        course.enrolledcourses?.map((enrolled: Enrolledcoursesandusersdetails) => ({
+        coursename: course.coursename,
+        description: course.description,
+        enrolleddate: enrolled.enrolleddate,
+        firstname: enrolled.users?.firstname || "-",
+        lastname: enrolled.users?.lastname || "-",
+        email: enrolled.users?.email || "-",
+      }))
   );
+}
 
   const columns = [
     {

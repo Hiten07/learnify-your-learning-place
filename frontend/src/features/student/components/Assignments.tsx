@@ -25,7 +25,8 @@ const Assignments = () => {
   }
 
   const handleSubmit = async (file: File,comment: string) => {
-
+    
+    setLoading(true);
     const queryParams = {
         courseid: selectedAssignment?.courseid,
         assignmentid: selectedAssignment?.id
@@ -36,12 +37,12 @@ const Assignments = () => {
     // formdata.append("comment",comment);
     console.log(comment);
 
-    setLoading(true);
     const response = await coursespostApis("/student/submit/assignment",formdata,queryParams);
 
     if(response.message) {
         showToastMessage(response.data.message,200);
         // setDisabled(false)
+        setLoading(false);
         closeModel();
     }
   }
@@ -112,7 +113,6 @@ const Assignments = () => {
                 className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300"
                 onClick={() => openModel(assignment,courseData.courseid)} >
                   {assignment ? "submitted" : "Submit assignement"}
-                  
                 </button>
               
               </div>
@@ -127,6 +127,7 @@ const Assignments = () => {
       onSubmit={handleSubmit}
       assignment={selectedAssignment}
       />
+
     </div>
   );
 };

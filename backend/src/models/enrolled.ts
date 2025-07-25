@@ -43,10 +43,9 @@ export class enrolled extends Model {
   })
   validuntildate!: Date;
 
-
   @BelongsTo(() => user)
   users!: user;
 
-  @BelongsTo(() => course)
+  @BelongsTo(() => course,{as: "enrolledcourses"})
   enrolledcourses!: course;
 }

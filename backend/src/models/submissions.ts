@@ -67,5 +67,8 @@ export class submission extends Model {
   isaccepted!: boolean;
 
   @BelongsTo(() => user)
-  students!: user;
+  student!: user;
+
+  @BelongsTo(() => assignment)
+  assignment!: assignment;
 }

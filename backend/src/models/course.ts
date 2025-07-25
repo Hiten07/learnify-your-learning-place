@@ -62,7 +62,7 @@ import { coursemodule } from "./coursemodule";
   @BelongsToMany(() => user, () => enrolled)
   students!: user[];
 
-  @HasMany(() => assignment) 
+  @HasMany(() => assignment,{as: "assignments"}) 
   assignments!: assignment[]
 
   @HasMany(() => enrolled)

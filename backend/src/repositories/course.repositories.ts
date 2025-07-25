@@ -1,6 +1,11 @@
 import { course } from "../models/course";
-import {  Op } from "sequelize";
-import { courseDetails, moduleDetails, assignmentObj, submissionObj } from "../types/customtypes";
+import { Op, Sequelize } from "sequelize";
+import {
+  courseDetails,
+  moduleDetails,
+  assignmentObj,
+  submissionObj,
+} from "../types/customtypes";
 import { paginationData } from "../types/interfaces";
 import { coursemodule } from "../models/coursemodule";
 import { enrolled } from "../models/enrolled";
@@ -10,7 +15,6 @@ import { addDays } from "date-fns";
 import { lessons } from "../models/lessons";
 import { submission } from "../models/submissions";
 import { assignment } from "../models/assignment";
-
 
 type Lesson = {
   title: string;
@@ -37,32 +41,31 @@ export const courseRepositories = {
   },
 
   async findInstructorCoursesHistory(instructorid: number) {
-      return course.findAndCountAll({
-        where: {
-          instructorid: instructorid
-        },
-       include: [
+    return course.findAndCountAll({
+      where: {
+        instructorid: instructorid,
+      },
+      include: [
         {
           model: enrolled,
           as: "enrolledcourses",
           required: true,
-          attributes: ["userid","enrolleddate","validuntildate"],
+          attributes: ["userid", "enrolleddate", "validuntildate"],
           include: [
             {
               model: user,
               as: "users",
-              attributes: ["id","firstname","lastname","email"]
-            }
-          ]
-        }
-       ]
-      })
+              attributes: ["id", "firstname", "lastname", "email"],
+            },
+          ],
+        },
+      ],
+    });
   },
 
   async getAllCoursesForStudent(paginationData: paginationData) {
-
     return course.findAndCountAll({
-        where: {
+      where: {
         [Op.or]: [
           {
             coursename: {
@@ -76,11 +79,10 @@ export const courseRepositories = {
           },
         ],
       },
-        order: [[paginationData.sortBy, paginationData.sortType]],
-        limit: paginationData.limit,
-        offset: paginationData.offset,
-      },
-    );
+      order: [[paginationData.sortBy, paginationData.sortType]],
+      limit: paginationData.limit,
+      offset: paginationData.offset,
+    });
   },
 
   async findCourseCreatedByInstructor(courseid: number, instructorid: number) {
@@ -141,47 +143,47 @@ export const courseRepositories = {
     });
   },
 
-// async createCourseWithModuleAndLessons (courseCreationData: Coursedata) {
-//   const { title, description, modules } = courseCreationData;
+  // async createCourseWithModuleAndLessons (courseCreationData: Coursedata) {
+  //   const { title, description, modules } = courseCreationData;
 
-//   const t = await sequelize.transaction();
+  //   const t = await sequelize.transaction();
 
-//   try {
-//     const coursecreated = await course.create({ title, description }, { transaction: t });
+  //   try {
+  //     const coursecreated = await course.create({ title, description }, { transaction: t });
 
-//     let order=1;
-//     for (const moduleData of modules) {
-//       const createdModule = await coursemodule.create(
-//         {
-//           title: moduleData.title,
-//           description: moduleData.description, 
-//           courseid: coursecreated.id,
-//           order: order++
-//         },
-//         { transaction: t }
-//       );
+  //     let order=1;
+  //     for (const moduleData of modules) {
+  //       const createdModule = await coursemodule.create(
+  //         {
+  //           title: moduleData.title,
+  //           description: moduleData.description,
+  //           courseid: coursecreated.id,
+  //           order: order++
+  //         },
+  //         { transaction: t }
+  //       );
 
-//       for (const lesson of moduleData.lessons) {
+  //       for (const lesson of moduleData.lessons) {
 
-//         await lessons.create(
-//           {
-//             title: lesson.title,
-//             description: lesson.description,
-//             moduleid: createdModule.id,
-//             videoUrl,
-//             pdfUrl,
-//           },
-//           { transaction: t }
-//         );
-//       }
-//     }
+  //         await lessons.create(
+  //           {
+  //             title: lesson.title,
+  //             description: lesson.description,
+  //             moduleid: createdModule.id,
+  //             videoUrl,
+  //             pdfUrl,
+  //           },
+  //           { transaction: t }
+  //         );
+  //       }
+  //     }
 
-//     await t.commit();
-//     return t;
-//   } catch (err) {
-//     await t.rollback();
-//   }
-// },
+  //     await t.commit();
+  //     return t;
+  //   } catch (err) {
+  //     await t.rollback();
+  //   }
+  // },
 
   async create(courseCreationData: courseDetails) {
     return course.create(courseCreationData);
@@ -231,26 +233,45 @@ export const courseRepositories = {
   async getAllCoursesAssignments(userid: number) {
     return enrolled.findAll({
       where: {
-        userid: userid
+        userid: userid,
       },
-      attributes: ["userid","courseid","enrolleddate","validuntildate"],
+      attributes: ["userid", "courseid", "enrolleddate", "validuntildate"],
       include: [
         {
           model: course,
           as: "enrolledcourses",
           required: true,
-          attributes: ["coursename","description","instructorid"],
-          include:[
+          attributes: ["coursename", "description", "instructorid"],
+          include: [
             {
               required: true,
               model: assignment,
               as: "assignments",
-              attributes: ["id","title","description","duedate","assignmentUrl","createdAt"],
-            }
-          ]
-        }
-      ]
-    })
+              attributes: [
+                "id",
+                "title",
+                "description",
+                "duedate",
+                "assignmentUrl",
+                "createdAt",
+              ],
+              include: [
+                {
+                  model: submission,
+                  as: "submissions",
+                  required: false,
+                  // right: true,
+                  where: {
+                    assignmentid: {[Op.is]: null}
+                  }
+                }
+              ],
+      
+            },
+          ],
+        },
+      ],
+    });
   },
 
   async updateSubmissionRemarks(
@@ -280,7 +301,6 @@ export const courseRepositories = {
     const currentDate = new Date();
     const validUntilDate = addDays(currentDate, course.duration);
 
-
     return enrolled.create({
       userid: userId,
       courseid: courseid,
@@ -288,7 +308,10 @@ export const courseRepositories = {
     });
   },
 
-  async getAllCoursesOfInstructor(instructorid: number,paginationData: paginationData) {
+  async getAllCoursesOfInstructor(
+    instructorid: number,
+    paginationData: paginationData
+  ) {
     return course.findAndCountAll({
       where: {
         instructorid: instructorid,

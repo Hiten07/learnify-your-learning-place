@@ -1,191 +1,224 @@
 import { ReactNode, useEffect, useState } from "react";
-import { SubmitHandler, useForm, } from "react-hook-form";
-import { useNavigate } from 'react-router-dom';
+import { SubmitHandler, useForm } from "react-hook-form";
+import { useNavigate } from "react-router-dom";
 import Button from "../../../components/Button/Button";
 import authApis from "../../../api/auth.api";
 import { signupSchema } from "../models/index";
-import {zodResolver} from "@hookform/resolvers/zod"
+import { zodResolver } from "@hookform/resolvers/zod";
+import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "../../../App.css";
 // import { showToastMessage } from "../../../utils/Toast.errors";
 
-
 type Inputs = {
-  firstname?: string,
-  lastname?: string,
-  email?: string,
-  phonenumber?: string,
-  password?: string,
-  role?: string
-}
+  firstname?: string;
+  lastname?: string;
+  email?: string;
+  phonenumber?: string;
+  password?: string;
+  role?: string;
+};
 
 export const Signup = () => {
-    
-    const [userData,setUserdata] = useState({});
-    const { register,handleSubmit,reset,formState: {errors,isSubmitting} } = useForm({
-      resolver: zodResolver(signupSchema)
-    });
-    const navigate = useNavigate();
+  const [userData, setUserdata] = useState({});
+  const [showpassword,setShowPassword] = useState(false);
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm({
+    resolver: zodResolver(signupSchema),
+  });
+  const navigate = useNavigate();
+
+  const togglePasswordVisibility = () => {
+    setShowPassword(!showpassword);
+  }
 
   useEffect(() => {
-
-    if(Object.keys(userData).length === 0) {
-        return;
+    if (Object.keys(userData).length === 0) {
+      return;
     }
     const registerUser = async () => {
-        try {
-            const userDetailsToken = await authApis("/users/register",userData);
+      try {
+        const userDetailsToken = await authApis("/users/register", userData);
 
-            if(userDetailsToken) {
-                navigate("/users/verify-otp",{
-                    state: userDetailsToken.token
-                })
-            }
-        } catch (error) {
-          // showToastMessage("something went wrong",501);
-          console.log(error)
+        if (userDetailsToken) {
+          navigate("/users/verify-otp", {
+            state: userDetailsToken.token,
+          });
         }
-    }
+      } catch (error) {
+        // showToastMessage("something went wrong",501);
+        console.log(error);
+      }
+    };
     registerUser();
-  },[userData,navigate])
-    
+  }, [userData, navigate]);
+
   const handleSubmitform: SubmitHandler<Inputs> = async (data) => {
-      // await new Promise((resolve) => setTimeout(resolve,5000))
-      // data.role = data.role?.split("") as string[];
-      setUserdata(data);
-   }    
+    // await new Promise((resolve) => setTimeout(resolve,5000))
+    // data.role = data.role?.split("") as string[];
+    setUserdata(data);
+  };
   return (
-    <div className="bg-dark-red p-12 max-w-md mx-auto shadow-md bg-dark-gray mt-15"  style={{backgroundColor : "rgb(245, 245, 245)"}}>
-    <form onSubmit={handleSubmit(handleSubmitform)}>
-    <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">
-          Sign up        
-    </h2>
-      <label className="block text-gray-700 font-semibold mb-1">
-        Firstname : 
-      </label>
-      <input
-        className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          errors.firstname ? "border-red-500" : "border-gray-300"
-        }`}
-        {...register("firstname", {
-          required: true,
-          minLength: {
-            value: 2,
-            message: "Firstname must have length of 2",
-          },
-        })}
-      />
-      {errors.firstname && (
-        <p className="text-red-600 text-sm mt-1">{errors.firstname.message as ReactNode}</p>
-      )}
-  
-      <br />
-      <br />
-  
-      <label className="block text-gray-700 font-semibold mb-1">
-        Lastname : 
-      </label>
-      <input
-        className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          errors.lastname ? "border-red-500" : "border-gray-300"
-        }`}
-        {...register("lastname", {
-          required: true,
-          minLength: {
-            value: 2,
-            message: "Lastname must have length of 2",
-          },
-        })}
-      />
-      {errors.lastname && (
-        <p className="text-red-600 text-sm mt-1">{errors.lastname.message as ReactNode}</p>
-      )}
-  
-      <br />
-      <br />
-  
-      <label className="block text-gray-700 font-semibold mb-1">
-        email : 
-      </label>
-      <input
-        className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          errors.email ? "border-red-500" : "border-gray-300"
-        }`}
-        {...register("email", {
-          required: true,
-        })}
-      />
-      {errors.email && (
-        <p className="text-red-600 text-sm mt-1">{errors.email.message as ReactNode}</p>
-      )}
-  
-      <br />
-      <br />
-  
-      <label className="block text-gray-700 font-semibold mb-1">
-        phone number : 
-      </label>
-      <input
-        className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          errors.phonenumber ? "border-red-500" : "border-gray-300"
-        }`}
-        {...register("phonenumber", {
-          required: true,
-        })}
-      />
-      {errors.phonenumber && (
-        <p className="text-red-600 text-sm mt-1">{errors.phonenumber.message as ReactNode}</p>
-      )}
-  
-      <br />
-      <br />
-  
-      <label className="block text-gray-700 font-semibold mb-1">
-        Password : 
-      </label>
-      <input
-        type="password"
-        className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
-          errors.password ? "border-red-500" : "border-gray-300"
-        }`}
-        {...register("password")}
-      />
-      {errors.password && (
-        <p className="text-red-600 text-sm mt-1">{errors.password.message as ReactNode}</p>
-      )}
-  
-      <br />
-      <br />
-  
-      <label className="block text-gray-700 font-semibold mb-1">
-        Role : 
-      </label>
-  
-      <select
-        className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
-        {...register("role")}
-      >
-        <option defaultValue={"role"}>select your role</option>
-        <option value="student">student</option>
-        <option value="instructor">Instructor</option>
-      </select>
+    <div
+      className="bg-dark-red p-12 max-w-md mx-auto shadow-md bg-dark-gray mt-15"
+      style={{ backgroundColor: "rgb(245, 245, 245)" }}
+    >
+      <form onSubmit={handleSubmit(handleSubmitform)}>
+        <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">
+          Sign up
+        </h2>
+        <label className="block text-gray-700 font-semibold mb-1">
+          Firstname :
+        </label>
+        <input
+          className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            errors.firstname ? "border-red-500" : "border-gray-300"
+          }`}
+          {...register("firstname", {
+            required: true,
+            minLength: {
+              value: 2,
+              message: "Firstname must have length of 2",
+            },
+          })}
+        />
+        {errors.firstname && (
+          <p className="text-red-600 text-sm mt-1">
+            {errors.firstname.message as ReactNode}
+          </p>
+        )}
 
-      {errors.role && <p>{errors.role.message}</p>}
+        <br />
+        <br />
 
-      <Button label="submit" type="submit" disableState={isSubmitting}/>
-      <Button label="reset" type="reset" disableState={isSubmitting} clickHandler={() => reset()}/>
+        <label className="block text-gray-700 font-semibold mb-1">
+          Lastname :
+        </label>
+        <input
+          className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            errors.lastname ? "border-red-500" : "border-gray-300"
+          }`}
+          {...register("lastname", {
+            required: true,
+            minLength: {
+              value: 2,
+              message: "Lastname must have length of 2",
+            },
+          })}
+        />
+        {errors.lastname && (
+          <p className="text-red-600 text-sm mt-1">
+            {errors.lastname.message as ReactNode}
+          </p>
+        )}
 
-      <p className="mt-5 text-center font-semi-bold">Already have an account ? <a href="/users/login">Login</a></p>
+        <br />
+        <br />
 
-{/*   
+        <label className="block text-gray-700 font-semibold mb-1">
+          email :
+        </label>
+        <input
+          className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            errors.email ? "border-red-500" : "border-gray-300"
+          }`}
+          {...register("email", {
+            required: true,
+          })}
+        />
+        {errors.email && (
+          <p className="text-red-600 text-sm mt-1">
+            {errors.email.message as ReactNode}
+          </p>
+        )}
+
+        <br />
+        <br />
+
+        <label className="block text-gray-700 font-semibold mb-1">
+          phone number :
+        </label>
+        <input
+          className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+            errors.phonenumber ? "border-red-500" : "border-gray-300"
+          }`}
+          {...register("phonenumber", {
+            required: true,
+          })}
+        />
+        {errors.phonenumber && (
+          <p className="text-red-600 text-sm mt-1">
+            {errors.phonenumber.message as ReactNode}
+          </p>
+        )}
+
+        <br />
+        <br />
+
+        <label className="block text-gray-700 font-semibold mb-1">
+          Password :
+        </label>
+        <div className="relative mb-4">
+          <input
+            type={showpassword ? "text" : "password"}
+            className={`w-full px-3 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-500 ${
+              errors.password ? "border-red-500" : "border-gray-300"
+            }`}
+            {...register("password")}
+          />
+          <span
+            onClick={togglePasswordVisibility}
+            className="absolute inset-y-0 right-3 flex items-center cursor-pointer text-gray-500"
+          >
+            {showpassword ? <FaEyeSlash/> : <FaEye/>}
+          </span>
+          {errors.password && (
+            <p className="text-red-600 text-sm mt-1">
+              {errors.password.message as ReactNode}
+            </p>
+          )}
+        </div>
+
+        <br />
+        <br />
+
+        <label className="block text-gray-700 font-semibold mb-1">Role :</label>
+
+        <select
+          className="w-full px-3 py-2 border border-gray-300 rounded focus:outline-none focus:ring-2 focus:ring-blue-500"
+          {...register("role")}
+        >
+          <option defaultValue={"role"}>select your role</option>
+          <option value="student">student</option>
+          <option value="instructor">Instructor</option>
+        </select>
+
+        {errors.role && <p>{errors.role.message}</p>}
+
+        <Button label="submit" type="submit" disableState={isSubmitting} />
+        <Button
+          label="reset"
+          type="reset"
+          disableState={isSubmitting}
+          clickHandler={() => reset()}
+        />
+
+        <p className="mt-5 text-center font-semi-bold">
+          Already have an account ? <a href="/users/login">Login</a>
+        </p>
+
+        {/*   
       <button
         type="submit" 
         disabled={isSubmitting}
         className="mt-4 w-full bg-blue-600 hover:bg-blue-700 text-white font-semibold py-2 rounded cursor-pointer"
         >
         {isSubmitting ? "submitting" : "submit"} */}
-      {/* </button> */}
-    </form>
-  </div>
-  
-  )
-}
+        {/* </button> */}
+      </form>
+    </div>
+  );
+};

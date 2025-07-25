@@ -26,8 +26,6 @@ export const checkPermission = (requiredPermission: string) => {
         });
       });
       
-
-      console.log(hasPermission)
       if (!hasPermission) {
         res
           .status(403)
