@@ -1,7 +1,5 @@
 import { showToastMessage } from "../utils/Toast.errors";
 import { axiosinstance } from "./Responseinterceptors";
-// import { useState, useCallback } from "react";
-// import { AxiosRequestConfig, AxiosResponse } from "axios";
 import "react-toastify/dist/ReactToastify.css";
 
 // export const useCustomApi = () => {

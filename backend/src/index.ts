@@ -10,6 +10,7 @@ import progressRoutes from "./routes/progress.routes";
 import assignmentRoutes from './routes/assignment.routes';
 import "../src/cron/cron-notifications"
 import {swaggerUi,specs} from "./swagger";
+import { initSocket } from './utils/socket';
 
 const app = express();
 const PORT = process.env.PORT || 3007;
@@ -43,9 +44,10 @@ const start = async () => {
     await sequelize.sync({ alter: true});
     console.log('✅ Database connected');
 
-    app.listen(PORT, () => {
+    const server = app.listen(PORT, () => {
       console.log(`🚀 Server running on http://localhost:${PORT}`);
     });
+    initSocket(server);
   } catch (err) {
     console.error('❌ Failed to start app:', err);
   }

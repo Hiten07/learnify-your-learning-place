@@ -50,12 +50,15 @@ export const authService = {
     const insertOtp = await userRepository.insertOtp(otpData as otp);
 
     if (insertOtp) {
-      sendMail(
-        data.email,
-        "User Verification",
-        `Your OTP for verification is ${OTP}`,
-        "OTP will expiry in 10 minutes, please use it before to verify."
-      );
+
+      const maildetails = {
+        toMail: data.email,
+        subject: "User Verification",
+        text: `Your OTP for verification is ${OTP}`,
+        message : "OTP will expiry in 10 minutes, please use it before to verify."
+      }
+
+      sendMail(maildetails);
     }
     return token;
   },
@@ -115,12 +118,13 @@ export const authService = {
     const insertOtp = await userRepository.insertOtp(otpData as otp);
 
     if (insertOtp) {
-      sendMail(
-        email,
-        "Regenerate OTP for Verification",
-        `Your OTP for verification is ${OTP}`,
-        "OTP will expiry in 10 minutes, please use it before to verify."
-      );
+      const maildetails = {
+        toMail: email,
+        subject: "Regenerate OTP for Verification",
+        text: `Your OTP for verification is ${OTP}`,
+        message: "OTP will expiry in 10 minutes, please use it before to verify."
+      }
+      sendMail(maildetails);
     }
     return insertOtp;
   },

@@ -1,12 +1,16 @@
+import ReactPlayer from "react-player";
 import { useLocation, useParams } from "react-router-dom";
 import { useEffect, useState } from "react";
-import { coursesgetApis } from "../../../api/course.api";
-import ReactPlayer from "react-player";
-import { Loader } from "../../../utils/Loader";
+import { coursesgetApis, coursespostApis } from "../../../api/course.api";
 import { Coursemodule, CourseModulelessons } from "../types/courses.types";
+import { AddAssignmentModal } from "./AddAssignmentModal";
+import { Loader } from "../../../utils/Loader";
+import { AssignmentForm } from "../models/Assignment.zod";
+import { showToastMessage } from "../../../utils/Toast.errors";
 
 const Coursematerial = () => {
   const [courseData, setCourseData] = useState([]);
+  const [showaddAssignmentModal,setshowaddAssignmentModal] = useState(false);
   const [loading, setLoading] = useState(false);
   const { courseid } = useParams();
   const coursedetails = useLocation();
@@ -14,6 +18,41 @@ const Coursematerial = () => {
   const queryParams = {
     courseid: courseid,
   };
+
+  const handleAssignmentSubmit = async (data: AssignmentForm) => {
+    console.log(data)
+    try {
+      setLoading(true);
+      setshowaddAssignmentModal(false);
+
+      const formdata = new FormData();
+      formdata.append("title",data.title);
+      formdata.append("description",data.description);
+      if (data.pdf && data.pdf.length > 0) {
+        formdata.append("docs", data.pdf[0]);
+      }
+      formdata.append("duedate",data.dueDate);
+  
+      const response = await coursespostApis("/courses/create/assignments",formdata,queryParams);
+  
+      if(response.message) {
+          showToastMessage(response.data.message,200);
+          // setDisabled(false) 
+          setLoading(false);
+          closeModel();
+      }
+    } 
+    catch (error) {
+      console.log(error);
+    }
+    finally {
+      setLoading(false)
+    }
+  }
+
+  const closeModel = async () => {
+    setshowaddAssignmentModal(false);
+  }
 
   useEffect(() => {
     const fetchCourse = async () => {
@@ -47,6 +86,25 @@ const Coursematerial = () => {
       <p className="text-sm font-semibold mb-4">
         Price : {coursedetails.state.price}
       </p>
+
+
+      <div className="flex justify-end mb-4">
+        <button
+          type="button"
+          className="px-4 py-2 bg-green-600 text-white rounded"
+          onClick={() => setshowaddAssignmentModal(true)}
+        >
+          Add Assignment
+        </button>
+      </div>
+
+      {showaddAssignmentModal && (
+        <AddAssignmentModal
+          onClose={closeModel}
+          onSubmit={handleAssignmentSubmit}
+        />
+      )}
+
 
       {loading && <Loader />}
 

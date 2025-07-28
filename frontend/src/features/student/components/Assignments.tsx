@@ -19,7 +19,7 @@ const Assignments = () => {
         setSelectedAssignment(assignment)
   }
 
-  const closeModel = () => {
+  const closeModel = async () => {
     setShowmodel(false);
     setSelectedAssignment(null);
   }
@@ -31,19 +31,23 @@ const Assignments = () => {
         courseid: selectedAssignment?.courseid,
         assignmentid: selectedAssignment?.id
       }
-
-    const formdata = new FormData();
-    formdata.append("submissionpdf",file);
-    // formdata.append("comment",comment);
-    console.log(comment);
-
-    const response = await coursespostApis("/student/submit/assignment",formdata,queryParams);
-
-    if(response.message) {
-        showToastMessage(response.data.message,200);
-        // setDisabled(false)
-        setLoading(false);
-        closeModel();
+      try {
+        
+            const formdata = new FormData();
+            formdata.append("submissionpdf",file);
+            // formdata.append("comment",comment);
+            console.log(comment);
+        
+            const response = await coursespostApis("/student/submit/assignment",formdata,queryParams);
+        
+            if(response.message) {
+                showToastMessage(response.data.message,200);
+                // setDisabled(false)
+                setLoading(false);
+                closeModel();
+            }
+      } catch (error) {
+        console.log(error);
     }
   }
 

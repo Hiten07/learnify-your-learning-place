@@ -60,6 +60,7 @@ const LessonFields = ({ moduleIndex }: { moduleIndex: number }) => {
           <label className="block text-gray-700 font-semibold mb-1">
              Video Lesson : 
           </label>
+
           <input
             type="file"
             accept="video/*"
@@ -76,6 +77,7 @@ const LessonFields = ({ moduleIndex }: { moduleIndex: number }) => {
           <label className="block text-gray-700 font-semibold mb-1">
             PDF Lesson :
           </label>
+
           <input
             type="file"
             accept="application/pdf"
@@ -292,13 +294,16 @@ const AddCourse = () => {
   return (
     <div className="p-12 max-w-5xl mx-auto shadow-md bg-dark-gray mt-20" style={{backgroundColor : "rgb(245, 245, 245)"}}>
         <FormProvider {...methods}>
+
         <form onSubmit={handleSubmit(onSubmit)}>
           {loading && <Loader/>}
+          <div>
         <h2 className="text-2xl font-bold text-center text-blue-600 mb-4">Add Course</h2>
 
         <label className="block text-gray-700 font-semibold mb-1">
           Course Title :
         </label>
+
         <input
           {...register("title")}
           type="text"
@@ -317,6 +322,7 @@ const AddCourse = () => {
         <label className="block text-gray-700 font-semibold mb-1">
           Course Price :
         </label>
+
         <input
           {...register("price",{
             valueAsNumber: true
@@ -337,6 +343,7 @@ const AddCourse = () => {
         <label className="block text-gray-700 font-semibold mb-1">
           Course Description :
         </label>
+
         <textarea
           {...register("description")}
           placeholder="Course Description"
@@ -371,6 +378,9 @@ const AddCourse = () => {
             {errors.duration.message}
           </p>
         )}
+
+      </div>
+
 
         {errors.modules && (
           <p className="text-red-500 text-sm">
@@ -415,7 +425,7 @@ const AddCourse = () => {
           disabled={loading}
           className="p-2 m-4 text-white"
           >
-           {loading ? "Adding course.." : "Add Course ✅"}
+           {loading ? "Adding course.." : "Add Course"}
         </button>
         <button
           type="reset"

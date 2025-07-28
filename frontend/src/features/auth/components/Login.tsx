@@ -8,8 +8,8 @@ import { loginSchema, loginFormValidations } from "../models/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Loader } from "../../../utils/Loader";
 // import { showToastMessage } from "../../../utils/Toast.errors";
-import { AuthContext } from "../../../hooks/Createcontext";
-import Getrolefromtoken from "../../../utils/Getrolefromtoken";
+import { useAuthContext } from "../../../hooks/Createcontext";
+import { Getrolefromtoken } from "../../../utils/Getrolefromtoken";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 
 export const Login = () => {
@@ -19,7 +19,7 @@ export const Login = () => {
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const navigate = useNavigate();
 
-  const { role, setRole, setAuthToken } = useContext(AuthContext);
+  const { role, setRole, setAuthToken } = useContext(useAuthContext);
 
   const togglePasswordVisibility = () => {
     setShowPassword(!showPassword);

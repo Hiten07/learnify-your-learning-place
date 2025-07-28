@@ -2,9 +2,9 @@ import { useContext } from "react";
 import { Link, useLocation } from "react-router-dom";
 import { FontAwesomeIcon } from "@fortawesome/react-fontawesome";
 import { faUser } from "@fortawesome/free-solid-svg-icons";
-import { AuthContext } from "../hooks/Createcontext";
+import { useAuthContext } from "../hooks/Createcontext";
 const Navbar = () => {
-  const { authToken, logout, role } = useContext(AuthContext);
+  const { authToken, logout, role } = useContext(useAuthContext);
 
   const location = useLocation();
   const currentpath = location.pathname;

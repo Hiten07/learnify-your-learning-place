@@ -37,8 +37,6 @@ const Enrolledcourses = () => {
     const validuntildate =  new Date(validuntildateAsString);
     validuntildate.setHours(validuntildate.getHours() + 5);
     validuntildate.setMinutes(validuntildate.getMinutes() + 30);
-    console.log(validuntildate.getMonth()+1)
-    console.log(validuntildate.getDate()+1)
     const validUntilDate = `${validuntildate.getDay()}-${validuntildate.getMonth()+1}-${validuntildate.getFullYear()}`;
     return validUntilDate;
   }

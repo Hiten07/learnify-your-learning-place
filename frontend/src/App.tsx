@@ -1,13 +1,13 @@
-import { AppRoutes } from "./routes";
-import "./App.css";
-import { AuthProvider } from "./hooks/AuthContext";
 
-function App() {
+import { AppRoutes } from "./routes";
+import { useSocket } from "./hooks/usesocket";
+import "./App.css"; 
+
+function App() {            
+  useSocket();
   return (
     <>
-    <AuthProvider>
       <AppRoutes/>
-    </AuthProvider>
     </>
   );
 }

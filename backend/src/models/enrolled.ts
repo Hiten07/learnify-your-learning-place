@@ -48,4 +48,5 @@ export class enrolled extends Model {
 
   @BelongsTo(() => course,{as: "enrolledcourses"})
   enrolledcourses!: course;
+    enrolled: any;
 }

@@ -1,22 +1,28 @@
 import { Request, Response } from "express";
-import { response } from "../errors/helperError";
+import { catchResponse, response } from "../errors/helperError";
 import { customError } from "../errors/customError";
 import { assignmentService } from "../services/assignment.service";
 import { paginationData } from "../types/interfaces";
 import { paginationresponse } from "../utils/paginationData";
+import { notifyStudentsAssignmentAdded } from "../utils/notifications";
 
 
 export const assignmentController = {
   async createAssignment(req: Request, res: Response) {
-    const courseid = parseInt(req.params?.courseid);
+    
+    let courseid = Number(req?.query?.courseid);
 
+    if(!courseid) {
+       res.status(403).json({
+        message: "internal server error",
+      })
+    }
+    
     try {
       const files = req.file;
       if (!files) {
-        res.status(400).json({ error: "pdf file is required" });
+        res.status(400).json({ message: "pdf file is required" });
       }
-
-      console.log(files);
 
       const assignmentdata = {
         courseid: courseid,
@@ -26,12 +32,12 @@ export const assignmentController = {
         duedate: req.body.duedate,
       };
 
-      const result = await assignmentService.createCourseAssignment(
-        assignmentdata
-      );
+      const result = await assignmentService.createCourseAssignment(assignmentdata);
+
 
       if (result) {
-        response(res, result, "Asssignement added successfully");
+        notifyStudentsAssignmentAdded(result.dataValues.courseid,result.dataValues.title);
+        response(res, result, "Assignment added successfully");
       }
     } catch (error) {
       console.log(error);

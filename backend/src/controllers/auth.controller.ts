@@ -104,7 +104,7 @@ export const authController = {
       res.cookie("authtoken", isLogin);
       res.status(200).json({
         message: "Login successfully done",
-        token: isLogin,
+        token: isLogin
       });
     } catch (error) {
       console.log(error);

@@ -13,6 +13,13 @@ router.get(
 );
 
 router.post(
+  "/create/assignments",
+  verifyToken(["instructor"]),
+  upload.single("docs"),
+  assignmentController.createAssignment
+);
+
+router.post(
   "/:courseid/assignments",
   verifyToken(["instructor"]),
   upload.single("docs"),

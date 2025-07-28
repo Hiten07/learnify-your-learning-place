@@ -1,3 +1,4 @@
+
 import { useEffect, useState,useCallback } from "react";
 import {coursesgetApis} from "../../../api/course.api";
 import { useNavigate } from "react-router-dom";
@@ -7,8 +8,11 @@ import { coursedetails } from "../types/courses.types";
 const Dashboard = () => {
   const navigate = useNavigate();
   const [coursedata, setCoursedata] = useState([]);
+  const [filteredCourseData, setFilteredCourseData] = useState([])
+  // const [coursedatacopy, setCoursedatacopy] = useState([]);
   const [loading, setLoading] = useState(false);
   const [totalCoursesCreated, setTotalCourseCreated] = useState(0);
+  const [searchData,setSearchData] = useState<string | null>(null);
 
   const [pagination, setPagination] = useState({
     page: 0,
@@ -21,6 +25,19 @@ const Dashboard = () => {
     sortType: "asc"
   };
 
+  const handleSearchSubmit = (value: string) => {
+
+    setSearchData(value);
+
+    const filteredItems = coursedata.filter((course: coursedetails) => {
+      return course?.coursename.toLowerCase().includes(value.toLowerCase()) || course?.duration.toString().toLowerCase().includes(value.toLowerCase())
+    });
+
+    setFilteredCourseData(filteredItems);
+  }
+
+
+
 
   const fetchAllInstructorCourses = useCallback(async () => {
     try 
@@ -30,6 +47,7 @@ const Dashboard = () => {
      
       if (response.data.courses.length > 0) {
         setCoursedata(response.data.courses);
+        setFilteredCourseData(response.data.courses);
         setTotalCourseCreated(response.data.totalItems);
         setPagination({
           page: response.data.currentPage,
@@ -80,6 +98,13 @@ const Dashboard = () => {
         </div>
       )}
 
+      <input 
+        type="text" 
+        className="w-full p-4 text-1xl text-blue-600 mb-4 border rounded border-gray-400"
+        placeholder="search by course name" 
+        onChange={(e) => handleSearchSubmit(e.target.value)} 
+        />
+
       {loading ? (
         <div className="text-center text-lg text-blue-500 mb-4">
           Fetching courses...
@@ -110,7 +135,7 @@ const Dashboard = () => {
           </div>
 
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-            {coursedata.map((course: coursedetails) => (
+            {filteredCourseData.map((course: coursedetails) => (
               <div
                 className="bg-white p-6 rounded-lg shadow-lg hover:shadow-2xl transition-shadow duration-300"
                 key={course.courseid}

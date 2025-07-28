@@ -9,15 +9,15 @@ const transporter = nodemailer.createTransport({
     },
 })
 
-export async function sendMail(toMail: string, subject: string, text: string, message: string) {
+export async function sendMail(maildetails: mailInterafce) {
   try {
   const info = await transporter.sendMail({
           from: process.env.SENDER_EMAIL, 
-          to: toMail, 
-          subject: subject, 
-          html: `${text}, ${message}`
+          to: maildetails.toMail, 
+          subject: maildetails.subject, 
+          html: `${maildetails.text}, ${maildetails.message}`
   })
-    console.log(`Message sent: ${toMail}`);
+    console.log(`Message sent: ${maildetails.toMail}`);
   } catch (e) {
     console.log(e);
   }

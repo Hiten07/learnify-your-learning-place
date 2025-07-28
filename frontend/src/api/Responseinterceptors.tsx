@@ -12,7 +12,6 @@ export const axiosinstance = axios.create({
 
 axiosinstance.interceptors.request.use(
     (config) => {
-      console.log(config)
     if(config.url == "/users/login" || config.url == '/users/register' || config.url == "/users/verify-otp") {
         return config;
     }
@@ -48,8 +47,9 @@ axiosinstance.interceptors.response.use(
     },
     (error) => {
       const responsedata = error.response;
-
-      if (responsedata.data?.message && responsedata?.status && (responsedata?.status === 401 || responsedata?.status === 402 || responsedata?.status === 403 || responsedata?.status === 404)) {
+      console.log(responsedata)
+      if (responsedata.data?.message && responsedata?.status && (responsedata?.status === 400 || responsedata?.status === 401 
+        || responsedata?.status === 402 || responsedata?.status === 403 || responsedata?.status === 404)) {
         toast.error(responsedata.data.message);
       }
       else if (responsedata.data?.message && responsedata?.status && (responsedata?.status === 500 || responsedata?.status === 500)) {

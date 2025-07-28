@@ -1,11 +1,11 @@
 import cron from 'node-cron';
 import { Op } from 'sequelize';
-import { sendMail,sendMailWithAttachment } from '../utils/mailer'; 
 import { user } from '../models/user';
 import { assignment } from '../models/assignment';
 import { enrolled } from '../models/enrolled';
 import { course } from '../models/course';
 import { getInstructorReports } from "../services/report.services";
+import { sendMail,sendMailWithAttachment } from '../utils/mailer'; 
 import { generatePDFWithPuppeteer } from '../utils/pdfgenerator';
 
 const logEmailSent = (recipient: string, subject: string, purpose: string) => {
@@ -43,12 +43,14 @@ async function notificationJob(logFn: CallableFunction) {
 
     const user = enroll.dataValues.users;
 
-    await sendMail(
-      recipientEmail,
-      `Hello ${user.dataValues.firstname}, Your Course Has Been Expiring In Next 3 Days!`,
-      `Your access to the course "${courseTitle}" expires soon. Please complete any pending lessons or contact your instructor.`,
-      'Use the best of time and learn from the course'
-    );
+    const maildetails = {
+      toMail: recipientEmail,
+      subject: `Hello ${user.dataValues.firstname}, Your Course Has Been Expiring In Next 3 Days!`,
+      text: `Your access to the course "${courseTitle}" expires soon. Please complete any pending lessons or contact your instructor.`,
+      message: 'Use the best of time and learn from the course'
+    }
+
+    await sendMail(maildetails);
 
     logFn(recipientEmail, 'Course Access Expiry Notice', `Access expiry notification for course "${courseTitle}"`);
   }
@@ -90,14 +92,16 @@ async function notificationJob(logFn: CallableFunction) {
       const user = enrollment.dataValues.users; // user details to which he/she is enrolled in course
       const recipientEmail = user.dataValues.email; // email of the  user 
 
-      await sendMail(
-        recipientEmail,
-        `Hello ${user.dataValues.firstname} 👋🏻, New Assignment Added To Your Course !`,
-        `A new assignment "${assignmentInstance.title}" has been added in "${course.dataValues.coursename} - ${course.dataValues.description}". Check it out!`,
-        `Course description -  ${assignmentInstance.description}, 
+      const maildetails = {
+        toMail: recipientEmail,
+        subject: `Hello ${user.dataValues.firstname} 👋🏻, New Assignment Added To Your Course !`,
+        text: `A new assignment "${assignmentInstance.title}" has been added in "${course.dataValues.coursename} - ${course.dataValues.description}". Check it out!`,
+        message: `Course description -  ${assignmentInstance.description}, 
         Due date for assignment - ${assignmentInstance.duedate}, 
         Please make sure you complete the assignment before the due date and submit it on time!`
-      );
+      }
+
+      await sendMail(maildetails);
 
       logFn(recipientEmail, 'New Assignment Added', `Notification for new assignment "${assignmentInstance.title}"`);
     }
