@@ -19,6 +19,7 @@ const Dashboard = () => {
     totalPages: 1,
   });
 
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   const queryParams = {
     page: "1",
     sortBy: "duration",
@@ -35,10 +36,7 @@ const Dashboard = () => {
 
     setFilteredCourseData(filteredItems);
   }
-
-
-
-
+  
   const fetchAllInstructorCourses = useCallback(async () => {
     try 
     {

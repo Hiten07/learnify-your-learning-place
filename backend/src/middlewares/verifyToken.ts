@@ -22,9 +22,12 @@ const verifyToken = (role: Array<string>) => {
         process.env.JWT_SECRET_KEY as string
       ) as CustomJwtPayload;
 
+      console.log(role)
+      console.log(data)
+      console.log(data.roles)
 
         if (!role.includes(data.roles)) {
-          console.log("role not fund")
+          // console.log("role not fund")
           res.status(403).json({
             message: "access denied for user"
           })

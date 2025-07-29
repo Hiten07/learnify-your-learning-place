@@ -122,10 +122,11 @@ export const courseService = {
     return allCourses;
   },
 
-  async getCoursesAllAssignments(studentid: number) {
+  async getCoursesAllAssignments(studentid: number,paginationData: paginationData) {
     try {
       const allAssignments = await courseRepositories.getAllCoursesAssignments(
-        studentid
+        studentid,
+        paginationData
       );
       if (allAssignments) {
         return allAssignments;

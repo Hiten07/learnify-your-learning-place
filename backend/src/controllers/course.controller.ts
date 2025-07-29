@@ -214,12 +214,36 @@ export const courseController = {
   async getStudentallAssignments(req: Request,res: Response) {
     try 
     {
+      const page = Number(req.query.page) || 1;
+
+      const limit = Number(req.query.pageSize) || 5;
+
+      const offset = (page * limit) - limit;
+
+      const sortBy = String(req.query.sortBy) || "title";
+
+      const sortType = req.query.sortType === "asc" ? "ASC" : "DESC";
+
+      const search = (req.query.search as string) || "";
+
+      const paginationData: paginationData = {
+        limit: limit,
+        offset: offset,
+        sortBy: sortBy,
+        sortType: sortType,
+        search: search,
+      };
+
         const studentId = req.user?.id;
         const AllAssignments = await courseService.getCoursesAllAssignments(
-         studentId
+         studentId,
+         paginationData
         );
-        
-        response(res,AllAssignments,"assignments fetched")
+
+        if(AllAssignments) {
+          const result = paginationresponse(AllAssignments,page,limit);
+          response(res,result,"assignments fetched")
+        }
     } 
     catch (error) {
       console.log(error)

@@ -7,6 +7,7 @@ export const notifyStudentsAssignmentAdded = async (courseId: number, assignment
 
   students.map((enrollment) => {
 
+
     const socketId = getUserSocketID(enrollment.dataValues.userid as string);
 
     if (socketId) {
@@ -15,7 +16,7 @@ export const notifyStudentsAssignmentAdded = async (courseId: number, assignment
         title: assignmentTitle,
         message: `New assignment "${assignmentTitle}" added to your course.`,
       });
+      console.log("message sent")
     }
-    console.log("message sent")
   });
 };

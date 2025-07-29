@@ -1,66 +1,94 @@
 import { useEffect, useState } from "react";
-import { coursesgetApis,coursespostApis } from "../../../api/course.api";
+import { coursesgetApis, coursespostApis } from "../../../api/course.api";
 import { Loader } from "../../../utils/Loader";
-import { allassignmentsdetails, assignments } from "../types/assignment.types";
+import {
+  allassignmentsdetails,
+  assignmentDetailsCourseWise,
+} from "../types/assignment.types";
 import AssignmentSubmitModal from "./Assignmentsubmitmodal";
 import { showToastMessage } from "../../../utils/Toast.errors";
 
 const Assignments = () => {
-
-  const [showmodel,setShowmodel] = useState<boolean>(false);
-  const [selectedAssignment,setSelectedAssignment]= useState<allassignmentsdetails| null>(null);
+  const [showmodel, setShowmodel] = useState<boolean>(false);
+  const [selectedAssignment, setSelectedAssignment] =
+    useState<allassignmentsdetails | null>(null);
   const [assignmentsData, setAssignmentsData] = useState([]);
   const [loading, setLoading] = useState(false);
-//   const [disabled,setDisabled] = useState([{}]);
+  // const [filter, setFilter] = useState<"all" | "pending" | "completed" | "expired">("all");
 
-  const openModel = (assignment: allassignmentsdetails,courseid: number) => {
-        assignment['courseid'] = courseid;
-        setShowmodel(true);
-        setSelectedAssignment(assignment)
-  }
+  const [pagination, setPagination] = useState({
+    page: 0,
+    totalPages: 1,
+  });
+
+  const openModel = (assignmentsData: allassignmentsdetails) => {
+    setShowmodel(true);
+    setSelectedAssignment(assignmentsData);
+  };
 
   const closeModel = async () => {
     setShowmodel(false);
     setSelectedAssignment(null);
-  }
+  };
 
-  const handleSubmit = async (file: File,comment: string) => {
-    
+  const handleSubmit = async (file: File, comment: string) => {
+    closeModel();
     setLoading(true);
     const queryParams = {
-        courseid: selectedAssignment?.courseid,
-        assignmentid: selectedAssignment?.id
+      courseid: selectedAssignment?.courseid,
+      assignmentid: selectedAssignment?.id,
+    };
+    try {
+      const formdata = new FormData();
+      formdata.append("submissionpdf", file);
+      // formdata.append("comment",comment);
+      console.log(comment);
+
+      const response = await coursespostApis(
+        "/student/submit/assignment",
+        formdata,
+        queryParams
+      );
+
+      if (response.message) {
+        showToastMessage(response.data.message, 200);
+        setLoading(false);
+        closeModel();
       }
-      try {
-        
-            const formdata = new FormData();
-            formdata.append("submissionpdf",file);
-            // formdata.append("comment",comment);
-            console.log(comment);
-        
-            const response = await coursespostApis("/student/submit/assignment",formdata,queryParams);
-        
-            if(response.message) {
-                showToastMessage(response.data.message,200);
-                // setDisabled(false)
-                setLoading(false);
-                closeModel();
-            }
-      } catch (error) {
-        console.log(error);
+    } catch (error) {
+      console.log(error);
     }
-  }
+  };
+
+  const queryParams = {
+    page: "1",
+    pageSize: "5",
+    sortBy: "title",
+    sortType: "DESC",
+    search: "",
+  };
+
+  const handlePaginationChange = (newPage: number) => {
+    queryParams.page = newPage.toString();
+    fetchAllEnrolledCoursesAssignments();
+  };
 
   const fetchAllEnrolledCoursesAssignments = async () => {
     try {
       setLoading(true);
-      const response = await coursesgetApis("/student/assignments", {});
-      if (response.data.length > 0) {
-        setAssignmentsData(response.data);
+      const response = await coursesgetApis(
+        "/student/assignments",
+        queryParams
+      );
+      if (response.data.courses.length > 0) {
+        setAssignmentsData(response.data.courses);
+        setPagination({
+          page: response.data.currentPage,
+          totalPages: response.data.totalPages,
+        });
       }
       setLoading(false);
-    } 
-    catch (error) {
+    } catch (error) {
       console.error(error);
       setLoading(false);
     }
@@ -83,55 +111,101 @@ const Assignments = () => {
       {loading && <Loader />}
 
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
-        {assignmentsData.map((courseData: assignments) => (
-           
-            courseData.enrolledcourses.assignments.map((assignment: allassignmentsdetails) => (
-                <div
-                key={assignment.id}
-                className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg"
-                >
-               
-                <h5 className="text-xl font-semibold text-indigo-700 mb-2">
-                  Name : {assignment.title}
-                </h5>
-                <p className="text-gray-600 mb-2">
-                  <span className="font-semibold">Course name :</span>{" "}
-                  {courseData.enrolledcourses.coursename}
-                </p>
-                
-                <p className="text-gray-700 mb-2">
-                  <span className="font-semibold">Description:</span>{" "}
-                  {assignment.description}
-                </p>
+        {assignmentsData.map((courseData: assignmentDetailsCourseWise) => (
+          // courseData.enrolledcourses.assignments.map(
+          // (assignment: allassignmentsdetails) => (
+          <div
+            key={courseData.id}
+            className="bg-white p-6 rounded-lg shadow-md hover:shadow-lg"
+          >
+            <h5 className="text-xl font-semibold text-indigo-700 mb-2">
+              Name : {courseData.title}
+            </h5>
+            <p className="text-gray-600 mb-2">
+              <span className="font-semibold">Course name :</span>{" "}
+              {courseData.course.coursename}
+            </p>
 
-                <p className="text-gray-600 mb-4">
-                  <span className="font-semibold">Due Date:</span>{" "}
-                  {new Date(assignment.duedate).toLocaleDateString("en-US", {
-                    year: "numeric",
-                    month: "long",
-                    day: "numeric",
-                   })}
-                </p>
+            <p className="text-gray-700 mb-2">
+              <span className="font-semibold">Description:</span>{" "}
+              {courseData.description}
+            </p>
 
-                <button 
+            <p className="text-gray-600 mb-4">
+              <span className="font-semibold">Due Date:</span>{" "}
+              {new Date(courseData.duedate).toLocaleDateString("en-US", {
+                year: "numeric",
+                month: "long",
+                day: "numeric",
+              })}
+            </p>
+
+            {
+            (courseData.submissions.length > 0) ? (
+              courseData.submissions.isaccepted ? (
+              <button
                 className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300"
-                onClick={() => openModel(assignment,courseData.courseid)} >
-                  {assignment ? "submitted" : "Submit assignement"}
-                </button>
-              
-              </div>
-            )
-          )
+                disabled={true}
+              >
+                Completed
+              </button>
+              ) : (
+                <button
+                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300"
+                disabled={true}
+              >
+                submitted 
+              </button>
+              )
+            ) : new Date(courseData.duedate) < new Date() ? (
+              <button
+                className="text-white px-4 py-2 bg-red-500 rounded cursor-not-allowed"
+                disabled
+              >
+                Assignment expired
+              </button>
+            ) : (
+              <button
+                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300"
+                onClick={() => openModel(courseData)}
+              >
+                Submit Assignment
+              </button>
+            )}
+          </div>
         ))}
       </div>
 
-      <AssignmentSubmitModal 
-      isOpen={showmodel}
-      onClose={closeModel}
-      onSubmit={handleSubmit}
-      assignment={selectedAssignment}
-      />
+      <div className="pagination flex content-center justify-center">
+        <button
+          className="mt-8 w-24 text-white font-semibold py-2 rounded cursor-pointer"
+          style={{ backgroundColor: "darkblue-600" }}
+          disabled={pagination.page <= 1}
+          onClick={() => handlePaginationChange(pagination.page - 1)}
+        >
+          Prev
+        </button>
 
+        <span className="font-semibold mt-12 m-5">
+          Page {pagination.page} of {pagination.totalPages}
+        </span>
+
+        <button
+          className="mt-8 w-24 text-white font-semibold py-2 rounded cursor-pointer"
+          style={{ backgroundColor: "darkblue-600" }}
+          disabled={pagination.page >= pagination.totalPages}
+          onClick={() => handlePaginationChange(pagination.page + 1)}
+        >
+          Next
+        </button>
+      </div>
+
+      <AssignmentSubmitModal
+        isOpen={showmodel}
+        onClose={closeModel}
+        onSubmit={handleSubmit}
+        assignment={selectedAssignment}
+      />
     </div>
   );
 };

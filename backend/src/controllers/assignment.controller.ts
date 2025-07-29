@@ -60,6 +60,7 @@ export const assignmentController = {
         assignmentid,
         assignmentdata
       );
+     
       response(res, result, "Assignment updated successfully");
     } catch (error) {
       console.log(error);
@@ -95,6 +96,7 @@ export const assignmentController = {
         search: search,
       };
 
+      
       const assignments = await assignmentService.getCourseAssignmentsWithPagination(courseid,paginationData);
 
       if (assignments) {

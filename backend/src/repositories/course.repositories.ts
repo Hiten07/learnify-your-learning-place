@@ -230,49 +230,104 @@ export const courseRepositories = {
     return lessons.create(lessondata);
   },
 
-  async getAllCoursesAssignments(userid: number) {
-    return enrolled.findAll({
+  async getAllCoursesAssignments(userId: number, paginationData: paginationData) {
+
+    const enrolledCourses = await enrolled.findAll({
+      where: { userid: userId },
+      attributes: ["courseid"],
+    });
+  
+    const courseIds = enrolledCourses.map(ec => ec.courseid);
+  
+    const assignments = await assignment.findAndCountAll({
       where: {
-        userid: userid,
+        courseid: courseIds,
+        [Op.or]: [
+          { title: { [Op.like]: `%${paginationData.search}%` } },
+          { description: { [Op.like]: `%${paginationData.search}%` } },
+        ],
       },
-      attributes: ["userid", "courseid", "enrolleddate", "validuntildate"],
       include: [
         {
           model: course,
-          as: "enrolledcourses",
-          required: true,
+          as: "course", 
           attributes: ["coursename", "description", "instructorid"],
-          include: [
-            {
-              required: true,
-              model: assignment,
-              as: "assignments",
-              attributes: [
-                "id",
-                "title",
-                "description",
-                "duedate",
-                "assignmentUrl",
-                "createdAt",
-              ],
-              include: [
-                {
-                  model: submission,
-                  as: "submissions",
-                  required: false,
-                  // right: true,
-                  where: {
-                    assignmentid: {[Op.is]: null}
-                  }
-                }
-              ],
-      
-            },
-          ],
+        },
+        {
+          model: submission,
+          as: "submissions",
+          where: { userid: userId },
+          required: false,
+          attributes: ["userid", "courseid", "assignmentid", "isaccepted", "submissionUrl"],
         },
       ],
+      distinct: true,
+      order: [[paginationData.sortBy, paginationData.sortType]],
+      limit: paginationData.limit, 
+      offset: paginationData.offset,
     });
+  
+    return assignments;
   },
+  
+
+  // async getAllCoursesAssignments(userid: number, paginationData: paginationData) {
+  //   return enrolled.findAll({
+  //     where: {
+  //       userid: userid,
+          
+  //       },
+  //     attributes: ["userid", "courseid", "enrolleddate", "validuntildate"],
+  //     include: [
+  //       {
+  //         model: course,
+  //         as: "enrolledcourses",
+  //         required: true,
+  //         attributes: ["coursename", "description", "instructorid"],
+  //         include: [
+  //           {
+  //             required: true,
+  //             model: assignment,
+  //             as: "assignments",
+  //             attributes: [
+  //               "id",
+  //               "title",
+  //               "description",
+  //               "duedate",
+  //               "assignmentUrl",
+  //               "createdAt",
+  //             ],
+  //             where: {
+  //               [Op.or]: [
+  //                 {
+  //                   title: {
+  //                     [Op.like]: `%${paginationData.search}%`,
+  //                   },
+  //                 },
+  //                 {
+  //                   description: {
+  //                     [Op.like]: `%${paginationData.search}%`,
+  //                   },
+  //                 },
+  //               ],
+  //             },
+  //             include: [
+  //               {
+  //                 model: submission,
+  //                 as: "submissions",
+  //                 attributes: ["userid","courseid","assignmentid","isaccepted","submissionUrl"]
+  //               }
+  //             ],
+  //              order: [[paginationData.sortBy, paginationData.sortType]],
+  //             },
+  //           ],
+            
+  //         },
+  //       ],
+  //       limit: paginationData.limit,
+  //       offset: paginationData.offset,
+  //   });
+  // },
 
   async updateSubmissionRemarks(
     remarks: boolean,

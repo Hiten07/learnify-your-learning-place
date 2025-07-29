@@ -41,7 +41,7 @@ app.use('/enrollcourses',progressRoutes);
 const start = async () => {
   try {
     await sequelize.authenticate();
-    await sequelize.sync({ alter: true});
+    await sequelize.sync({ alter: true });
     console.log('✅ Database connected');
 
     const server = app.listen(PORT, () => {

@@ -1,26 +1,34 @@
-export interface assignments {
-    userid: number,
-    courseid: number,
-    enrolleddate: string,
-    validuntildate: string
-    enrolledcourses : assignmentDetailsCourseWise,
-}
+import { coursedetails } from "../../courses/types/courses.types";
 
 export interface assignmentDetailsCourseWise {
-    courseid: number,
-    coursename: string, 
-    description: string, 
-    instructorid: number, 
-    assignments: allassignmentsdetails[]
+  id: number;
+  title: string;
+  description: string;
+  assignmentUrl: string;
+  duedate: string;
+  courseid: number;
+  course: coursedetails;
+  submissions: submissionsdetails[];
+  createdAt: string;
+  updatedAt: string;
+  deletedAt: string;
+}
+
+interface submissionsdetails {
+  userid: number;
+  courseid: number;
+  assignmentid: number;
+  isaccepted: boolean;
+  submissionUrl: string;
 }
 
 export interface allassignmentsdetails {
-    id: number,
-    title: string
-    description: string,
-    assignmentUrl: string,
-    duedate: string,
-    createdAt: string,
-    courseid?: number,
-}   
- 
+  id: number;
+  title: string;
+  description: string;
+  assignmentUrl: string;
+  duedate: string;
+  createdAt: string;
+  courseid?: number;
+  submissions?: [];
+}
