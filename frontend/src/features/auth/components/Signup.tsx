@@ -7,6 +7,7 @@ import { signupSchema } from "../models/index";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
 import "../../../App.css";
+import { showToastMessage } from "../../../utils/Toast.errors";
 // import { showToastMessage } from "../../../utils/Toast.errors";
 
 type Inputs = {
@@ -44,6 +45,7 @@ export const Signup = () => {
         const userDetailsToken = await authApis("/users/register", userData);
 
         if (userDetailsToken) {
+          showToastMessage(userDetailsToken.message,200);
           navigate("/users/verify-otp", {
             state: userDetailsToken.token,
           });

@@ -5,7 +5,7 @@ import { FC } from "react";
 export const InstructorRoutes: FC = () => {
   return (
     <Routes>
-        <Route index element={<Profile />} />
+        <Route path="/profile" element={<Profile />} />
     </Routes>
   );
 };

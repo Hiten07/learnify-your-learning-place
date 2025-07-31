@@ -11,6 +11,7 @@ import { Loader } from "../../../utils/Loader";
 import { useAuthContext } from "../../../hooks/Createcontext";
 import { Getrolefromtoken } from "../../../utils/Getrolefromtoken";
 import { FaEye, FaEyeSlash } from "react-icons/fa";
+import { showToastMessage } from "../../../utils/Toast.errors";
 
 export const Login = () => {
   const [logindata, setLogindata] = useState({});
@@ -42,7 +43,7 @@ export const Login = () => {
           setLoading(false);
           setAuthToken(userDetailsToken.token);
           setRole(Getrolefromtoken(userDetailsToken.token));
-
+          showToastMessage(userDetailsToken.message,200);
           if (role === "instructor") {
             navigate("/dashboard");
           } else if (role === "student") {

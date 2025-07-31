@@ -39,6 +39,7 @@ export const assignmentController = {
         notifyStudentsAssignmentAdded(result.dataValues.courseid,result.dataValues.title);
         response(res, result, "Assignment added successfully");
       }
+        response(res,response,"no assignment found");
     } catch (error) {
       console.log(error);
     }
@@ -102,9 +103,8 @@ export const assignmentController = {
       if (assignments) {
         const result = paginationresponse(assignments,page,limit);
         response(res, result, "Assignments retrieved successfully");
-      } else {
+      } 
         res.status(404).json({ error: "No assignments found for this course" });
-      }
     } catch (error) {
       console.log(error);
       res
@@ -123,9 +123,8 @@ export const assignmentController = {
 
       if (result) {
         response(res, result, "Assignment deleted successfully");
-      } else {
+      } 
         res.status(404).json({ error: "Assignment not found" });
-      }
     } catch (error) {
       console.log(error);
       res
@@ -234,11 +233,10 @@ export const assignmentController = {
 
       if (updateResult!.length >= 1) {
         response(res, updateResult, "Remark updated successfully");
-      } else {
+      } 
         res
           .status(404)
           .json({ error: "Submission not found or update failed" });
-      }
     } catch (error) {
       console.error(error);
       if (error instanceof customError) {

@@ -5,6 +5,7 @@ import {zodResolver} from "@hookform/resolvers/zod";
 import { CourseForm } from "../models/Courseschema.zod";
 import { ReactNode, useState } from "react";
 import { Loader } from "../../../utils/Loader";
+import { showToastMessage } from "../../../utils/Toast.errors";
 
 // useFormContext => custom hook that allows you to access the state and methods provided by formprovider
 // Formprovider => provides method & state to the nested components of component using react-hook-form
@@ -100,7 +101,8 @@ const LessonFields = ({ moduleIndex }: { moduleIndex: number }) => {
         <button
                 type="button"
                 className="p-2 m-4 text-white" 
-                onClick={() => removeLesson(lessonIndex)}>
+                onClick={() => removeLesson(lessonIndex)}
+                disabled={lessonFields.length === 1}>
                 remove lesson
         </button>
         </div>
@@ -219,10 +221,11 @@ const AddCourse = () => {
     name: "modules",
   });
 
+
   const onSubmit = async (data: CourseForm) => {
     try {
       setLoading(true);
-      const courseRes = await coursespostApis(
+      const courseResponse = await coursespostApis(
         "/courses/create",
         {
           coursename: data.title,
@@ -233,14 +236,14 @@ const AddCourse = () => {
         {}
       );
 
-      if (!courseRes) throw new Error("Failed to create course");
-      const courseId = courseRes.data.courseid;
-      console.log(courseId)
+      if (!courseResponse) throw new Error("Failed to create course");
+      showToastMessage(courseResponse.message,200);
+      const courseId = courseResponse.data.courseid;
 
       // 2. Create Modules
       for (const module of data.modules) {
         let order = 1;
-        const moduleRes = await coursespostApis("/courses/module",
+        const moduleResponse = await coursespostApis("/courses/module",
         {
           title: module.title,
           description: module.description,
@@ -250,13 +253,13 @@ const AddCourse = () => {
           courseid: courseId
         })
 
-        if (!moduleRes) throw new Error("Failed to create module");
+        if (!moduleResponse) throw new Error("Failed to create module");
 
-        const moduleId = moduleRes.data.id;
+        const moduleId = moduleResponse.data.id;
+        showToastMessage(moduleResponse.message,200);
 
         // 3. Create Lessons
         for (const lesson of module.lessons) {
-          console.log(lesson)
           const lessonFormData = new FormData();
           
           lessonFormData.append("title", lesson.title);
@@ -272,13 +275,14 @@ const AddCourse = () => {
           for (const [key, value] of lessonFormData.entries()) {
             console.log(key, value);
           }
-          const lessonRes = await coursespostApis("/courses/module/lessons",
+          const lessonResponse = await coursespostApis("/courses/module/lessons",
             lessonFormData,
             {
               moduleid: moduleId
             })
 
-          if (!lessonRes) throw new Error("Failed to create lesson");
+          if (!lessonResponse) throw new Error("Failed to create lesson");
+          showToastMessage(lessonResponse.message,200);
         }
       }
       reset();

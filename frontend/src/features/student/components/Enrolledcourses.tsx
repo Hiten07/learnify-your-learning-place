@@ -3,6 +3,7 @@ import { useEffect, useState,useCallback } from "react";
 import {coursesgetApis} from "../../../api/course.api";
 import { useNavigate } from "react-router-dom";
 import {coursedetails} from "../../courses/types/courses.types";
+import { convertStringDate } from "../../../utils/Convertstringtodate";
 
 const Enrolledcourses = () => {
 
@@ -33,20 +34,12 @@ const Enrolledcourses = () => {
 //     return timestampDate;
 //   };
 
-  const convertStringDate = (validuntildateAsString : string) => {
-    const validuntildate =  new Date(validuntildateAsString);
-    validuntildate.setHours(validuntildate.getHours() + 5);
-    validuntildate.setMinutes(validuntildate.getMinutes() + 30);
-    const validUntilDate = `${validuntildate.getDay()}-${validuntildate.getMonth()+1}-${validuntildate.getFullYear()}`;
-    return validUntilDate;
-  }
-
   const fetchAllInstructorCourses = useCallback(async () => {
     try 
     {
       setLoading(true);
       const response = await coursesgetApis("/student/courses", queryParams);
-        console.log(response)
+      
       if (response.data.courses.length > 0) {
         setCoursedata(response.data.courses);
         setPagination({

@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { Loader } from "../../../utils/Loader";
 import { coursesgetApis } from "../../../api/course.api";
 import { Coursepurchasehistory,Enrolledcoursesandusersdetails } from "../types/courses.types";
+import { convertStringDate } from "../../../utils/Convertstringtodate";
 
 const Coursehistory = () => {
   const [loading, setLoading] = useState(false);
@@ -51,7 +52,7 @@ const Coursehistory = () => {
     },
     {
       name: "Enrolled Date",
-      selector: (row: { enrolleddate: string}) => row.enrolleddate,
+      selector: (row: { enrolleddate: string}) => convertStringDate( row.enrolleddate ),
       sortable: true,
     },
     {

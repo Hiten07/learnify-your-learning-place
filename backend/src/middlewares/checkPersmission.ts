@@ -14,7 +14,11 @@ export const checkPermission = (requiredPermission: string) => {
           .json({ message: "Unauthorized: No user found in request" });
       }
 
-      const existinguser = await permissionsRepositories.checkPermissionsForUsersRoles(userId,requiredPermission);
+      const existinguser =
+        await permissionsRepositories.checkPermissionsForUsersRoles(
+          userId,
+          requiredPermission
+        );
 
       if (!existinguser) {
         res.status(401).json({ message: "Unauthorized: User not found" });
@@ -22,22 +26,19 @@ export const checkPermission = (requiredPermission: string) => {
 
       const hasPermission = existinguser?.Roles.some((role: Role) => {
         return role.Permissions.some((permission: Permission) => {
-          return permission.permissionname === requiredPermission; 
+          return permission.permissionname === requiredPermission;
         });
       });
-      
+
       if (!hasPermission) {
-        res
-          .status(403)
-          .json({
-            message: "Forbidden: You do not have the required permission",
-          });
+        res.status(403).json({
+          message: "Forbidden: You do not have the required permission",
+        });
       }
 
       next();
-    } catch (error) { 
-      console.error(error);
+    } catch (error) {
       res.status(500).json({ message: "Internal Server Error" });
     }
   };
-}; 
+};

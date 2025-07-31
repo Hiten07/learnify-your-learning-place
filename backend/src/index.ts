@@ -15,7 +15,6 @@ import { initSocket } from './utils/socket';
 const app = express();
 const PORT = process.env.PORT || 3007;
 
-
 app.use(
   cors({
     origin: "http://localhost:5173",

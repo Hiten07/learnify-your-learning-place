@@ -46,9 +46,11 @@ export const CourseContentController = {
         })
       );
 
-      res.status(200).json(modulesWithLessons);
+      res.status(200).json({
+        message: "course content fetched successfully",
+        data: modulesWithLessons
+      });
     } catch (error) {
-      console.error(error);
       res.status(500).json({ message: "Failed to retrieve course content" });
     }
   },

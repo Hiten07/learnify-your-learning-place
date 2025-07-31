@@ -5,6 +5,7 @@ import { useEffect, useState } from "react";
 import authApis from "../../../api/auth.api";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { verifyOtpSchema } from "../models/index";
+import { showToastMessage } from "../../../utils/Toast.errors";
 // import { showToastMessage } from "../../../utils/Toast.errors";
 
 type otpType = {
@@ -31,6 +32,7 @@ export const Verifyotp = () => {
           const userDetailsToken = await authApis("/users/register/verify",otp);
   
           if(userDetailsToken) {
+            showToastMessage(userDetailsToken.message,200);
             navigate("/users/login");
           }
         } 

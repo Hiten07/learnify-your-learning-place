@@ -48,7 +48,7 @@ export const lessonRepositories = {
         completedAt: new Date(),
       },
       {
-        where: { userid: userid, courseid: courseid, lessonid: lessonid },
+        where: { userid, courseid, lessonid },
       }
     );
   },
@@ -61,9 +61,9 @@ export const lessonRepositories = {
   ) {
     return trackprogress.findOrCreate({
       where: {
-        userid: userid,
-        courseid: courseid,
-        lessonid: lessonid,
+        userid,
+        courseid,
+        lessonid,
       },
       defaults: {
         iscompleted: !!completed,

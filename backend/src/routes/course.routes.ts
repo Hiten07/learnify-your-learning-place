@@ -361,6 +361,23 @@ router.post(
   courseController.addModuleToCourse
 );
 
+router.get(
+  "/module/order",
+  verifyToken(["instructor"]),
+  courseController.getLastOrderOfModule
+);
+
+router.post(
+  "/update/:courseid",
+  verifyToken(["instructor"]),
+  validateparams([
+    {
+      name: "courseid",
+      type: "number",
+    },
+  ]),
+  courseController.updateCourseDetails
+);
 
 router.post(
   "/module/lessons",

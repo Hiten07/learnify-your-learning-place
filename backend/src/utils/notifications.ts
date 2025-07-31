@@ -6,8 +6,6 @@ export const notifyStudentsAssignmentAdded = async (courseId: number, assignment
   const students = await courseContentRepositories.getAllStudentsAssignments(courseId);
 
   students.map((enrollment) => {
-
-
     const socketId = getUserSocketID(enrollment.dataValues.userid as string);
 
     if (socketId) {

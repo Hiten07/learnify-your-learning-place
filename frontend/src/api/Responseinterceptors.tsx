@@ -34,20 +34,14 @@ axiosinstance.interceptors.request.use(
 axiosinstance.interceptors.response.use(
     (response) => {
       const data = response?.data;
-  
       if (data?.message && typeof data?.message === 'string') {
-        toast.success(data.message);
+        console.log(data.message);
       } 
-
-    //   else if (data?.status && typeof data?.status === 'string') {
-    //     toast.success(data.status + ` - Status code: ${data.code}`);
-    //   }
   
       return response;
     },
     (error) => {
       const responsedata = error.response;
-      console.log(responsedata)
       if (responsedata.data?.message && responsedata?.status && (responsedata?.status === 400 || responsedata?.status === 401 
         || responsedata?.status === 402 || responsedata?.status === 403 || responsedata?.status === 404)) {
         toast.error(responsedata.data.message);

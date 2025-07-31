@@ -20,6 +20,18 @@ export const courseService = {
     }
   },
 
+  async getLastOrderOfModuleCourse(courseid: number) {
+    const result = await courseRepositories.getLastOrderOfModuleCourse(courseid);
+
+    if (!result) {
+      throw new customError(
+        "NO_MODULE_FOUND",
+        "NO module found for course."
+      );
+    }
+    return result;
+  },
+
   async getAllCourses(paginationData: paginationData) {
     try {
       const result = await courseRepositories.getAllCoursesForStudent(

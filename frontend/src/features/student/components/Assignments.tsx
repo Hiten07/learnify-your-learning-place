@@ -14,7 +14,6 @@ const Assignments = () => {
     useState<allassignmentsdetails | null>(null);
   const [assignmentsData, setAssignmentsData] = useState([]);
   const [loading, setLoading] = useState(false);
-  // const [filter, setFilter] = useState<"all" | "pending" | "completed" | "expired">("all");
 
   const [pagination, setPagination] = useState({
     page: 0,
@@ -140,22 +139,22 @@ const Assignments = () => {
               })}
             </p>
 
-            {
-            (courseData.submissions.length > 0) ? (
-              courseData.submissions.isaccepted ? (
-              <button
-                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300"
-                disabled={true}
-              >
-                Completed
-              </button>
+            {courseData.submissions.length > 0 ? (
+              courseData.submissions[0].isaccepted ? (
+                <button
+                  className="bg-white-600 text-indigo px-4 py-2 rounded hover:bg-indigo-700 transition duration-300"
+                  disabled={true}
+                >
+                  Completed
+                </button>
               ) : (
                 <button
-                className="bg-indigo-600 text-white px-4 py-2 rounded hover:bg-indigo-700 transition duration-300"
-                disabled={true}
-              >
-                submitted 
-              </button>
+                  className="text-black px-4 py-2 rounded cursor-not-allowed"
+                  style={{ backgroundColor: "lightblue" }}
+                  disabled={true}
+                >
+                  submitted
+                </button>
               )
             ) : new Date(courseData.duedate) < new Date() ? (
               <button

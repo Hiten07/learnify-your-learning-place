@@ -27,7 +27,7 @@ const Navbar = () => {
   ];
   return (
     <nav className="shadow-md sticky top-0 z-50 bg-black-90">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
+      <div className="max-w-7xl mx-auto  px-4 sm:px-6 lg:px-8 flex items-center justify-between h-16">
         <div className="flex-shrink-0 text-blue-600 font-bold text-xl">
           learnify
         </div>

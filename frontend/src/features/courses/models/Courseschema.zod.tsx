@@ -9,10 +9,18 @@ export const lessonSchema = z.object({
   pdf: z.any().optional(),
 });
 
+export const lessonSchema2 = z.object({
+  lessons: z.array(lessonSchema).min(1, "Module must have at least one lesson"),
+});
+
 export const moduleSchema = z.object({
   title: z.string().min(1, "Module title is required"),
   description: z.string().min(1, "Module description is required"),
   lessons: z.array(lessonSchema).min(1, "Each module must have at least one lesson"),
+});
+
+export const moduleSchema2 = z.object({
+  modules: z.array(moduleSchema).min(1, "Course must have at least one module"),
 });
 
 export const courseSchema = z.object({
@@ -24,3 +32,7 @@ export const courseSchema = z.object({
 });
 
 export type CourseForm = z.infer<typeof courseSchema>;
+export type ModuleForm = z.infer<typeof moduleSchema>;
+export type LessonForm = z.infer<typeof lessonSchema>;
+export type ModuleSchemaForm = z.infer<typeof moduleSchema2>;
+export type lessonSchemaForm = z.infer<typeof lessonSchema2>;

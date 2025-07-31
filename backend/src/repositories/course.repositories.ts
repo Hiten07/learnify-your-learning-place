@@ -189,6 +189,15 @@ export const courseRepositories = {
     return course.create(courseCreationData);
   },
 
+  async getLastOrderOfModuleCourse(courseid: number) {
+    return coursemodule.findOne({
+      where: {
+        courseid
+      },
+      order: [['order','DESC']]
+    })
+  },
+
   async findByUserAndCourse(userid: number, courseid: number) {
     return enrolled.findOne({
       where: {
@@ -358,7 +367,7 @@ export const courseRepositories = {
 
     return enrolled.create({
       userid: userId,
-      courseid: courseid,
+      courseid,
       validuntildate: validUntilDate,
     });
   },
@@ -367,6 +376,7 @@ export const courseRepositories = {
     instructorid: number,
     paginationData: paginationData
   ) {
+    console.log(paginationData)
     return course.findAndCountAll({
       where: {
         instructorid: instructorid,
