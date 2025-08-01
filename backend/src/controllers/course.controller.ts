@@ -154,11 +154,17 @@ export const courseController = {
             message: "Internal server error",
           });
         }
-      } else {
-        res.status(500).json({
-          message: "Internal server error",
-        });
-      }
+      } 
+    }
+  },
+
+  async deleteModuleFromCourse(req: Request,res: Response) {
+    try {
+      const moduleid = Number(req.query.moduleid);
+      const result = await courseService.deleteModuleFromCourse(moduleid);
+      response(res,result,"module deleted successfully");
+    } catch (error) {
+      catchResponse(res,error as Error);
     }
   },
 

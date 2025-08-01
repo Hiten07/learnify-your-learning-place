@@ -1,7 +1,7 @@
 import ReactPlayer from "react-player";
 import { useLocation, useParams } from "react-router-dom";
 import { useContext, useEffect, useState } from "react";
-import { coursesgetApis, coursespostApis } from "../../../api/course.api";
+import { getApis, postApis, deleteApis } from "../../../api/course.api";
 import { Coursemodule, CourseModulelessons } from "../types/courses.types";
 import { AddAssignmentModal } from "./AddAssignmentModal";
 import { Loader } from "../../../utils/Loader";
@@ -9,17 +9,19 @@ import { AssignmentForm } from "../models/Assignment.zod";
 import { showToastMessage } from "../../../utils/Toast.errors";
 import { useAuthContext } from "../../../hooks/Createcontext";
 import { useNavigate } from "react-router-dom";
+import ProgressBar from "../../student/components/Progressbar";
 
 const Coursematerial = () => {
   const [courseData, setCourseData] = useState([]);
   const [showaddAssignmentModal, setshowaddAssignmentModal] = useState(false);
   const [loading, setLoading] = useState(false);
+  const [progressBar, setProgressBar] = useState({});
+
   const { courseid } = useParams();
   const coursedetails = useLocation();
   const navigate = useNavigate();
 
-  const { role } = useContext(useAuthContext);
-
+  const { role, authToken } = useContext(useAuthContext);
   const queryParams = {
     courseid: courseid,
   };
@@ -37,7 +39,7 @@ const Coursematerial = () => {
       }
       formdata.append("duedate", data.dueDate);
 
-      const response = await coursespostApis(
+      const response = await postApis(
         "/courses/create/assignments",
         formdata,
         queryParams
@@ -56,66 +58,129 @@ const Coursematerial = () => {
     }
   };
 
+
+  const deleteCourseModule = async (moduleid: number) => {
+    setLoading(true);
+    const queryParams = {
+      moduleid: moduleid,
+    };
+    try {
+      const result = await deleteApis("/courses/module/delete", queryParams);
+    if(result) {
+      navigate(`/courses/${courseid}`,{
+        state: coursedetails.state
+      })
+      showToastMessage(result.message, 200);
+    }
+    setLoading(false)
+    } catch (error) {
+      console.log(error);
+    }
+  };
+
+
   const closeModel = async () => {
     setshowaddAssignmentModal(false);
   };
 
   useEffect(() => {
+    setLoading(true);
     const fetchCourse = async () => {
       try {
-        setLoading(true);
-        const res = await coursesgetApis(`/coursecontent`, queryParams);
+        const res = await getApis(`/coursecontent`, queryParams);
         if (res) {
           setCourseData(res.data);
         }
       } catch (error) {
         console.log(error);
-      } finally {
-        setLoading(false);
       }
     };
     fetchCourse();
+
+
+    if (authToken && role === "student") {
+      const fetchProgress = async () => {
+        try {
+          const result = await getApis(
+            "/enrollcourses/trackprogress",
+            queryParams
+          );
+          console.log(result.data);
+          setProgressBar(result.data);
+        } catch (error) {
+          console.log(error);
+        }
+      };
+      
+      fetchProgress();
+    }
+    setLoading(false);
   }, []);
 
   return (
     <div className="p-6 pt-24 mx-16">
-      <h2 className="text-2xl font-bold mb-4">
-        coursename : {coursedetails.state.coursename}
-      </h2>
-      <h2 className="text-2xl font-semibold mb-4">
-        description : {coursedetails.state.coursedescription}
-      </h2>
+      <div className="flex justify-between">
+        <div
+          className="mb-20 p-8 bg-gradient-to-br from-blue-50 via-white to-green-50 shadow-lg rounded-xl border border-gray-200"
+          style={{ width: "50%", height: "35%" }}
+        >
+          <h2 className="text-3xl font-extrabold mb-4 text-blue-700 flex items-center">
+            📘 <span className="ml-2">{coursedetails.state.coursename}</span>
+          </h2>
 
-      <h6 className="text-sm font-semibold mb-4">
-        Duration : {coursedetails.state.duration}
-      </h6>
-      <h6 className="text-sm font-semibold mb-4">
-        Price : {coursedetails.state.price}
-      </h6>
+          <h2 className="text-lg font-medium mb-4 text-gray-700 flex items-center">
+            📝{" "}
+            <span className="ml-2">
+              {coursedetails.state.coursedescription}
+            </span>
+          </h2>
 
-      {role === "instructor" ? (
-        <div className="flex justify-end mb-4 mr-16">
-          <button
-            type="button"
-            className="px-4 py-2 bg-green-600 text-white rounded"
-            onClick={() => setshowaddAssignmentModal(true)}
-          >
-            Add Assignment
-          </button>
+          <div className="flex flex-wrap text-sm font-semibold text-gray-600 mb-6 space-x-6">
+            <div className="flex items-center">
+              ⏳{" "}
+              <span className="ml-1">
+                Duration: {coursedetails.state.duration}
+              </span>
+            </div>
+            <div className="flex items-center">
+              💰{" "}
+              <span className="ml-1 font-bold">
+                Price: {coursedetails.state.price}
+              </span>
+            </div>
+          </div>
 
-          <button
-            type="button"
-            className="px-4 py-2 bg-green-600 text-white rounded ml-8"
-            onClick={() => {
-              navigate(`/courses/${courseid}/add/modules`);
-            }}
-          >
-            Add Module
-          </button>
+          {role === "instructor" && (
+            <div className="flex justify-end gap-4">
+              <button
+                type="button"
+                className="px-5 py-2.5 bg-green-600 hover:bg-green-700 text-white font-semibold rounded-md shadow transition duration-200"
+                onClick={() => setshowaddAssignmentModal(true)}
+              >
+                ➕ Create Assignment Task
+              </button>
+
+              <button
+                type="button"
+                className="px-5 py-2.5 bg-blue-600 hover:bg-blue-700 text-white font-semibold rounded-md shadow transition duration-200"
+                onClick={() => {
+                  navigate(`/courses/${courseid}/add/modules`);
+                }}
+              >
+                📚 Add Learning Module
+              </button>
+            </div>
+          )}
         </div>
-      ) : (
-        <></>
-      )}
+
+        {authToken && role === "student" ? (
+          <div>
+            <ProgressBar progress={progressBar} />
+          </div>
+        ) : (
+          ""
+        )}
+      </div>
 
       {showaddAssignmentModal && (
         <AddAssignmentModal
@@ -137,17 +202,31 @@ const Coursematerial = () => {
       ) : (
         courseData.map((module: Coursemodule) => (
           <div key={module.id} className="mb-16 p-4 border rounded-lg">
-            <div className="flex justify-end mb-4 mr-16">
-              <button
-                type="button"
-                className="px-4 py-2 bg-green-600 text-white rounded"
-                onClick={() => {
-                  navigate(`/courses/${courseid}/add/module/${module.id}`)
-                }}
-              >
-                Add lesson
-              </button>
-            </div>
+            {authToken && role === "instructor" ? (
+              <div className="flex justify-end mb-4 mr-16">
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-green-600 text-white rounded"
+                  onClick={() => {
+                    navigate(`/courses/${courseid}/add/module/${module.id}`, {
+                      state: coursedetails.state,
+                    });
+                  }}
+                >
+                  📚 Add Learning lesson
+                </button>
+
+                <button
+                  type="button"
+                  className="px-4 py-2 bg-green-600 text-white rounded"
+                  onClick={() => deleteCourseModule(module.id)}
+                >
+                  📚 Delete Module
+                </button>
+              </div>
+            ) : (
+              ""
+            )}
 
             <h3 className="text-lg font-semibold">
               Module Title: {module.title}

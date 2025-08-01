@@ -1,7 +1,7 @@
 import DataTable from "react-data-table-component";
 import { useEffect, useState } from "react";
 import { Loader } from "../../../utils/Loader";
-import { coursesgetApis } from "../../../api/course.api";
+import { getApis } from "../../../api/course.api";
 import { Coursepurchasehistory,Enrolledcoursesandusersdetails } from "../types/courses.types";
 import { convertStringDate } from "../../../utils/Convertstringtodate";
 
@@ -13,7 +13,7 @@ const Coursehistory = () => {
     const fetchCourse = async () => {
       try {
         setLoading(true);
-        const res = await coursesgetApis(`/courses/history`, {});
+        const res = await getApis(`/courses/history`, {});
         if (res) {
           setApiData(res.data.rows);
         }

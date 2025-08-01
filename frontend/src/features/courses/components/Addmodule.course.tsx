@@ -4,12 +4,12 @@ import {
   FormProvider,
   useFormContext,
 } from "react-hook-form";
-import { coursespostApis, coursesgetApis } from "../../../api/course.api";
+import { postApis, getApis } from "../../../api/course.api";
 import { moduleSchema2, ModuleSchemaForm } from "../models/Courseschema.zod";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReactNode, useState } from "react";
 import { Loader } from "../../../utils/Loader";
-import { useParams } from "react-router-dom";
+import { useParams, useNavigate, useLocation } from "react-router-dom";
 import { showToastMessage } from "../../../utils/Toast.errors";
 
 const LessonFields = ({ moduleIndex }: { moduleIndex: number }) => {
@@ -177,9 +177,18 @@ const AddCourseModule = () => {
   });
 
   const [loading, setLoading] = useState(false);
+  const coursedetails = useLocation();
+  const navigate = useNavigate();
   const { courseid } = useParams();
 
-  const { control, register, reset, formState: { errors }, handleSubmit, watch } = methods;
+  const {
+    control,
+    register,
+    reset,
+    formState: { errors },
+    handleSubmit,
+    watch,
+  } = methods;
 
   const {
     fields: moduleFields,
@@ -197,12 +206,12 @@ const AddCourseModule = () => {
     try {
       setLoading(true);
 
-      const result = await coursesgetApis("/courses/module/order", {
+      const result = await getApis("/courses/module/order", {
         courseid: courseid,
       });
 
       for (const [moduleIndex, module] of data.modules.entries()) {
-        const moduleResponse = await coursespostApis(
+        const moduleResponse = await postApis(
           "/courses/module",
           {
             title: module.title,
@@ -233,7 +242,7 @@ const AddCourseModule = () => {
             lessonFormData.append("docs", pdfFiles[0]);
           }
 
-          const lessonResponse = await coursespostApis(
+          const lessonResponse = await postApis(
             "/courses/module/lessons",
             lessonFormData,
             {
@@ -241,6 +250,10 @@ const AddCourseModule = () => {
             }
           );
 
+          setLoading(false);
+          navigate(`/courses/${courseid}`, {
+            state: coursedetails.state,
+          });
           showToastMessage(lessonResponse.message, 200);
         }
       }
@@ -254,10 +267,7 @@ const AddCourseModule = () => {
   };
 
   return (
-    <div
-      className="p-12 max-w-5xl mx-auto shadow-md bg-dark-gray mt-20"
-      style={{ backgroundColor: "rgb(245, 245, 245)" }}
-    >
+    <div className="p-12 max-w-5xl mx-auto bg-gradient-to-br from-blue-50 via-white to-green-50 shadow-lg mt-20">
       {loading && <Loader />}
       <FormProvider {...methods}>
         <form onSubmit={handleSubmit(onSubmit)}>

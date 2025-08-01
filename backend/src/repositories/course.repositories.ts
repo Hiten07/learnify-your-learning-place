@@ -40,6 +40,14 @@ export const courseRepositories = {
     return user.findByPk(id);
   },
 
+  async deleteModuleByID(moduleid: number) {
+    return coursemodule.restore({
+      where: {
+        id: 3
+      }
+    })
+  },
+
   async findInstructorCoursesHistory(instructorid: number) {
     return course.findAndCountAll({
       where: {

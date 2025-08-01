@@ -18,6 +18,12 @@ router.post(
   lessonController.trackCourseProgress
 );
 
+
+router.get(
+  "/trackprogress",
+  lessonController.getCourseProgress
+);
+
 router.post(
   "/:courseid/trackprogress",
   validateparams([{ name: "courseid", type: "number" }]),

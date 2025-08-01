@@ -1,5 +1,5 @@
 import { useForm, useFieldArray, FormProvider, useFormContext, UseFieldArrayRemove } from "react-hook-form";
-import { coursespostApis } from "../../../api/course.api";
+import { postApis } from "../../../api/course.api";
 import { courseSchema } from "../models/Courseschema.zod";
 import {zodResolver} from "@hookform/resolvers/zod";
 import { CourseForm } from "../models/Courseschema.zod";
@@ -215,7 +215,6 @@ const AddCourse = () => {
 
   const [loading,setLoading] = useState(false);
   const { control, register, reset, formState: { errors }, handleSubmit} = methods;
-
   const { fields: moduleFields, append: appendModule, remove: removeModule } = useFieldArray({
     control,
     name: "modules",
@@ -225,7 +224,7 @@ const AddCourse = () => {
   const onSubmit = async (data: CourseForm) => {
     try {
       setLoading(true);
-      const courseResponse = await coursespostApis(
+      const courseResponse = await postApis(
         "/courses/create",
         {
           coursename: data.title,
@@ -243,7 +242,7 @@ const AddCourse = () => {
       // 2. Create Modules
       for (const module of data.modules) {
         let order = 1;
-        const moduleResponse = await coursespostApis("/courses/module",
+        const moduleResponse = await postApis("/courses/module",
         {
           title: module.title,
           description: module.description,
@@ -275,18 +274,21 @@ const AddCourse = () => {
           for (const [key, value] of lessonFormData.entries()) {
             console.log(key, value);
           }
-          const lessonResponse = await coursespostApis("/courses/module/lessons",
+          const lessonResponse = await postApis("/courses/module/lessons",
             lessonFormData,
             {
               moduleid: moduleId
             })
 
-          if (!lessonResponse) throw new Error("Failed to create lesson");
+          if (!lessonResponse) throw new Error("Failed to create lesson");     
+    
+          reset();
+          setLoading(false);
           showToastMessage(lessonResponse.message,200);
+          
         }
       }
-      reset();
-      setLoading(false);
+    
     } catch (error) {
       console.error(error);
     }
@@ -296,7 +298,7 @@ const AddCourse = () => {
   };
 
   return (
-    <div className="p-12 max-w-5xl mx-auto shadow-md bg-dark-gray mt-20" style={{backgroundColor : "rgb(245, 245, 245)"}}>
+    <div className="p-12 max-w-5xl mx-auto shadow-md bg-gradient-to-br from-blue-50 via-white to-green-50 shadow-lg mt-20" style={{backgroundColor : "rgb(245, 245, 245)"}}>
         <FormProvider {...methods}>
 
         <form onSubmit={handleSubmit(onSubmit)}>

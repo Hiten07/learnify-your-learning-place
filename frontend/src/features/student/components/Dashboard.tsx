@@ -1,8 +1,7 @@
 import { useEffect, useState, useCallback } from "react";
-import { coursesgetApis } from "../../../api/course.api";
+import { getApis } from "../../../api/course.api";
 import { Loader } from "../../../utils/Loader";
 import { coursedetails } from "../../courses/types/courses.types";
-import { debounce } from "../../../utils/Debouncing";
 // import { useNavigate } from "react-router-dom";
 
 const Dashboard = () => {
@@ -24,7 +23,7 @@ const Dashboard = () => {
     try {
       setLoading(true);
       console.log(queryParams.page)
-      const response = await coursesgetApis("/student/allcourses", queryParams);
+      const response = await getApis("/student/allcourses", queryParams);
 
       if (response.data.courses.length > 0) {
         setCoursedata(response.data.courses);

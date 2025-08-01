@@ -20,6 +20,10 @@ export const courseService = {
     }
   },
 
+  async deleteModuleFromCourse(moduleid: number) {
+    return await courseRepositories.deleteModuleByID(moduleid);
+  },
+
   async getLastOrderOfModuleCourse(courseid: number) {
     const result = await courseRepositories.getLastOrderOfModuleCourse(courseid);
 

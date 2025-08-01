@@ -1,6 +1,6 @@
 
 import { useEffect, useState,useCallback } from "react";
-import {coursesgetApis} from "../../../api/course.api";
+import {getApis} from "../../../api/course.api";
 import { useNavigate } from "react-router-dom";
 import {coursedetails} from "../../courses/types/courses.types";
 import { convertStringDate } from "../../../utils/Convertstringtodate";
@@ -38,7 +38,7 @@ const Enrolledcourses = () => {
     try 
     {
       setLoading(true);
-      const response = await coursesgetApis("/student/courses", queryParams);
+      const response = await getApis("/student/courses", queryParams);
       
       if (response.data.courses.length > 0) {
         setCoursedata(response.data.courses);

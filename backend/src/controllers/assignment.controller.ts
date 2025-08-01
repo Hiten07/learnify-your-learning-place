@@ -1,23 +1,21 @@
 import { Request, Response } from "express";
-import { catchResponse, response } from "../errors/helperError";
+import { response } from "../errors/helperError";
 import { customError } from "../errors/customError";
 import { assignmentService } from "../services/assignment.service";
 import { paginationData } from "../types/interfaces";
 import { paginationresponse } from "../utils/paginationData";
 import { notifyStudentsAssignmentAdded } from "../utils/notifications";
 
-
 export const assignmentController = {
   async createAssignment(req: Request, res: Response) {
-    
     let courseid = Number(req?.query?.courseid);
 
-    if(!courseid) {
-       res.status(403).json({
+    if (!courseid) {
+      res.status(403).json({
         message: "internal server error",
-      })
+      });
     }
-    
+
     try {
       const files = req.file;
       if (!files) {
@@ -32,14 +30,20 @@ export const assignmentController = {
         duedate: req.body.duedate,
       };
 
-      const result = await assignmentService.createCourseAssignment(assignmentdata);
-
+      const result = await assignmentService.createCourseAssignment(
+        assignmentdata
+      );
 
       if (result) {
-        notifyStudentsAssignmentAdded(result.dataValues.courseid,result.dataValues.title);
+        notifyStudentsAssignmentAdded(
+          result.dataValues.courseid,
+          result.dataValues.title
+        );
         response(res, result, "Assignment added successfully");
       }
-        response(res,response,"no assignment found");
+     else {
+      res.status(404).json({ message: "Assignment not found" });
+     }
     } catch (error) {
       console.log(error);
     }
@@ -61,7 +65,7 @@ export const assignmentController = {
         assignmentid,
         assignmentdata
       );
-     
+
       response(res, result, "Assignment updated successfully");
     } catch (error) {
       console.log(error);
@@ -97,14 +101,17 @@ export const assignmentController = {
         search: search,
       };
 
-      
-      const assignments = await assignmentService.getCourseAssignmentsWithPagination(courseid,paginationData);
+      const assignments =
+        await assignmentService.getCourseAssignmentsWithPagination(
+          courseid,
+          paginationData
+        );
 
       if (assignments) {
-        const result = paginationresponse(assignments,page,limit);
+        const result = paginationresponse(assignments, page, limit);
         response(res, result, "Assignments retrieved successfully");
-      } 
-        res.status(404).json({ error: "No assignments found for this course" });
+      }
+      res.status(404).json({ error: "No assignments found for this course" });
     } catch (error) {
       console.log(error);
       res
@@ -123,8 +130,10 @@ export const assignmentController = {
 
       if (result) {
         response(res, result, "Assignment deleted successfully");
-      } 
-        res.status(404).json({ error: "Assignment not found" });
+      }
+      else {
+        res.status(404).json({ message: "Assignment not found" });
+      }
     } catch (error) {
       console.log(error);
       res
@@ -135,24 +144,25 @@ export const assignmentController = {
 
   async submitAssignment(req: Request, res: Response) {
     try {
-
       const courseid = Number(req.query?.courseid);
       const assignmentid = Number(req.query?.assignmentid);
       const user = req.user;
       const file = req.file;
-  
+
       if (!file) {
         res.status(400).json({ error: "Submission file is required" });
         return;
       }
-   
 
-      const enrolled = await assignmentService.checkEnrolledStudent(user?.id,courseid);
+      const enrolled = await assignmentService.checkEnrolledStudent(
+        user?.id,
+        courseid
+      );
 
       if (!enrolled || user?.roles !== "student") {
-        res
-          .status(403)
-          .json({ message: "You are not authorized to submit this assignment" });
+        res.status(403).json({
+          message: "You are not authorized to submit this assignment",
+        });
         return;
       }
 
@@ -165,7 +175,6 @@ export const assignmentController = {
 
       const result2 = await assignmentService.submitAssignment(submission);
       response(res, result2, "Assignment submitted successfully");
-
     } catch (error) {
       console.log(error);
       res.status(500).json({ error: "Failed to submit assignment" });
@@ -195,9 +204,9 @@ export const assignmentController = {
         res
           .status(404)
           .json({ error: "No submissions found for this assignment" });
+      } else {
+        response(res, submissions, "Submissions retrieved successfully");
       }
-
-      response(res, submissions, "Submissions retrieved successfully");
     } catch (error) {
       console.error(error);
       res.status(500).json({ error: "Failed to retrieve submissions" });
@@ -233,10 +242,11 @@ export const assignmentController = {
 
       if (updateResult!.length >= 1) {
         response(res, updateResult, "Remark updated successfully");
-      } 
+      } else {
         res
           .status(404)
           .json({ error: "Submission not found or update failed" });
+      }
     } catch (error) {
       console.error(error);
       if (error instanceof customError) {

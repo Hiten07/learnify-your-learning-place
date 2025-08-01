@@ -1,5 +1,5 @@
 import { useForm, useFieldArray, FormProvider } from "react-hook-form";
-import { coursespostApis } from "../../../api/course.api";
+import { postApis } from "../../../api/course.api";
 import {
   lessonSchemaForm,
   lessonSchema2,
@@ -7,7 +7,7 @@ import {
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ReactNode, useState } from "react";
 import { Loader } from "../../../utils/Loader";
-import { useParams } from "react-router-dom";
+import { useNavigate, useParams, useLocation } from "react-router-dom";
 import { showToastMessage } from "../../../utils/Toast.errors";
 
 const AddLessonToCourseModule = () => {
@@ -26,7 +26,9 @@ const AddLessonToCourseModule = () => {
   });
 
   const [loading, setLoading] = useState(false);
-  const { moduleid } = useParams();
+  const { moduleid,courseid } = useParams();
+  const coursedetails = useLocation();
+  const navigate = useNavigate();
 
   const {
     control,
@@ -52,7 +54,7 @@ const AddLessonToCourseModule = () => {
   const onSubmit = async (data: lessonSchemaForm) => {
     try {
       setLoading(true);
-      console.log(data)
+
 
 
       for (const [lessonIndex, lesson] of data.lessons.entries()) {
@@ -73,7 +75,7 @@ const AddLessonToCourseModule = () => {
             lessonFormData.append("docs", pdfFiles[0]);
           }
 
-          const lessonResponse = await coursespostApis(
+          const lessonResponse = await postApis(
             "/courses/module/lessons",
             lessonFormData,
             {
@@ -81,11 +83,16 @@ const AddLessonToCourseModule = () => {
             }
           );
 
-          showToastMessage(lessonResponse.message, 200);
+          if(lessonResponse) {
+            setLoading(false);
+            navigate(`/courses/${courseid}`,{
+              state: coursedetails.state
+            })
+            showToastMessage(lessonResponse.message, 200);
+          }
         }
-        
-      setLoading(false);
-      reset();
+        reset()
+        setLoading(false)
     } catch (error) {
       console.error(error);
       setLoading(false);
@@ -94,7 +101,7 @@ const AddLessonToCourseModule = () => {
 
   return (
     <div
-      className="p-12 max-w-5xl mx-auto shadow-md bg-dark-gray mt-20"
+      className="p-12 max-w-5xl mx-auto bg-gradient-to-br from-blue-50 via-white to-green-50 shadow-lg mt-20"
       style={{ backgroundColor: "rgb(245, 245, 245)" }}
     >
       {loading && <Loader />}

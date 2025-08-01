@@ -1,5 +1,5 @@
 import { useEffect, useState, useCallback, useMemo } from "react";
-import { coursesgetApis } from "../../../api/course.api";
+import { getApis } from "../../../api/course.api";
 import { useNavigate } from "react-router-dom";
 import { coursedetails } from "../types/courses.types";
 import { debounce } from "../../../utils/Debouncing";
@@ -30,18 +30,13 @@ const Dashboard = () => {
     queryParams.search = e.target.value;
     queryParams.page = "1"
     debounceFetchedData(e.target.value);
-
-  //   // const filteredItems = coursedata.filter((course: coursedetails) => {
-  //   //   return course?.coursename.toLowerCase().includes(value.toLowerCase()) || course?.duration.toString().toLowerCase().includes(value.toLowerCase())
-  //   // });
-  //   // setFilteredCourseData(filteredItems);
   },[]);
 
   const fetchAllInstructorCourses = useCallback(async () => {
 
     try {
       setLoading(true);
-      const response = await coursesgetApis("/courses/mycourses", queryParams);
+      const response = await getApis("/courses/mycourses", queryParams);
 
       if (response.data.courses.length > 0) {
         setCoursedata(response.data.courses);

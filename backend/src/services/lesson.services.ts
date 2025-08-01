@@ -7,24 +7,24 @@ export const lessonService = {
   async updateTrackProgress(userid: number,courseid: number) {
     try {
       const course = await lessonRepositories.getTrackProgress(courseid);
-      console.log(course);
+      
       if (!course) {
         throw new customError("COURSE_NOT_FOUND","course not found");
       }
 
       const lessons = course.coursemodules.flatMap((mod) => mod.lessons);
-      console.log(lessons);
+
       const lessonIds = lessons.map((l) => l.id);
       const totalLessons = lessonIds.length;
 
       if (totalLessons === 0) {
         throw new customError("NO_LESSONS","no lessons found in course");
-      }
+      }                                              
 
       const completedLessons = await lessonRepositories.getUsersCompletedLessons(userid,lessonIds)
       const percentage = Math.round((completedLessons / totalLessons) * 100);
 
-      const responseObj = {
+      const responseObj = { 
         courseid,
         totallessons: totalLessons,
         completedLessons: completedLessons,

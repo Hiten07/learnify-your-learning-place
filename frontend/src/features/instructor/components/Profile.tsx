@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { coursesgetApis } from "../../../api/course.api";
+import { getApis } from "../../../api/course.api";
 
 interface ProfileData {
   firstname: string;
@@ -38,7 +38,7 @@ const Profile = () => {
   useEffect(() => {
     const fetchProfile = async () => {
       try {
-        const response = await coursesgetApis("/users/instructor/profile", {});
+        const response = await getApis("/users/instructor/profile", {});
         const data = response.data;
         setProfile(response.data);
 

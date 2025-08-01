@@ -3,7 +3,7 @@ import { axiosinstance } from './Responseinterceptors';
 import { AxiosRequestConfig } from 'axios';
 import { showToastMessage } from '../utils/Toast.errors';
 
-const coursesgetApis = async (endpoint: string,queryParams: AxiosRequestConfig['params']) => {
+const getApis = async (endpoint: string,queryParams: AxiosRequestConfig['params']) => {
     try {
         const result = await axiosinstance.get(endpoint,
         {
@@ -26,7 +26,7 @@ const coursesgetApis = async (endpoint: string,queryParams: AxiosRequestConfig['
     }   
 }
 
-const coursespostApis = async (endpoint: string,data: unknown,queryParams: AxiosRequestConfig['params']) => {
+const postApis = async (endpoint: string,data: unknown,queryParams: AxiosRequestConfig['params']) => {
     try {
         const result = await axiosinstance.post(endpoint,data,
         {
@@ -47,4 +47,23 @@ const coursespostApis = async (endpoint: string,data: unknown,queryParams: Axios
         console.log(error);
     }   
 }
-export { coursesgetApis,coursespostApis };
+
+const deleteApis = async (endpoint: string,queryParams: AxiosRequestConfig['params']) => {
+    try {
+        const result = await axiosinstance.delete(endpoint,
+        {
+            // validateStatus: () => true,
+            params: queryParams,
+        })
+        if(result.data) {
+            return result?.data;
+        }
+        else {
+            showToastMessage("internal server error",500);
+        }
+        
+    } catch (error) {
+        console.log(error);
+    }   
+}
+export { getApis,postApis,deleteApis };

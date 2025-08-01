@@ -355,10 +355,17 @@ router.post(
   courseController.createCourse
 );
 
+
 router.post(
   "/module",
   verifyToken(["instructor"]),
   courseController.addModuleToCourse
+);
+
+router.delete(
+  "/module/delete",
+  verifyToken(["instructor"]),
+  courseController.deleteModuleFromCourse
 );
 
 router.get(

@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { coursesgetApis, coursespostApis } from "../../../api/course.api";
+import { getApis, postApis } from "../../../api/course.api";
 import { Loader } from "../../../utils/Loader";
 import {
   allassignmentsdetails,
@@ -43,7 +43,7 @@ const Assignments = () => {
       // formdata.append("comment",comment);
       console.log(comment);
 
-      const response = await coursespostApis(
+      const response = await postApis(
         "/student/submit/assignment",
         formdata,
         queryParams
@@ -75,7 +75,7 @@ const Assignments = () => {
   const fetchAllEnrolledCoursesAssignments = async () => {
     try {
       setLoading(true);
-      const response = await coursesgetApis(
+      const response = await getApis(
         "/student/assignments",
         queryParams
       );
