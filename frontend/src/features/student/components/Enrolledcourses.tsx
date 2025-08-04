@@ -22,18 +22,6 @@ const Enrolledcourses = () => {
     sortType: "asc"
   };
 
-//    const getISTTime = (date: Date | string) => {
-//     let ndate: Date = new Date(date);
-//     ndate.setHours(ndate.getHours() + 5);
-//     ndate.setMinutes(ndate.getMinutes() + 30);
-  
-//     let currentTimestamp = ndate.toISOString();
-//     console.log(currentTimestamp);
-  
-//     let timestampDate = currentTimestamp.slice(0, 10);
-//     return timestampDate;
-//   };
-
   const fetchAllInstructorCourses = useCallback(async () => {
     try 
     {

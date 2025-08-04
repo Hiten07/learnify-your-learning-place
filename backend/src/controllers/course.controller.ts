@@ -286,7 +286,9 @@ export const courseController = {
         const result = paginationresponse(AllAssignments, page, limit);
         response(res, result, "assignments fetched");
       }
-      response(res, null, "no assignments fetched");
+      else {
+        response(res, null, "no assignments fetched");
+      }
     } catch (error) {
       console.log(error);
       res

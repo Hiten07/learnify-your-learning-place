@@ -41,11 +41,11 @@ export const courseRepositories = {
   },
 
   async deleteModuleByID(moduleid: number) {
-    return coursemodule.restore({
+    return coursemodule.destroy({
       where: {
-        id: 3
-      }
-    })
+        id: moduleid,
+      },
+    });
   },
 
   async findInstructorCoursesHistory(instructorid: number) {
@@ -200,10 +200,10 @@ export const courseRepositories = {
   async getLastOrderOfModuleCourse(courseid: number) {
     return coursemodule.findOne({
       where: {
-        courseid
+        courseid,
       },
-      order: [['order','DESC']]
-    })
+      order: [["order", "DESC"]],
+    });
   },
 
   async findByUserAndCourse(userid: number, courseid: number) {
@@ -247,15 +247,17 @@ export const courseRepositories = {
     return lessons.create(lessondata);
   },
 
-  async getAllCoursesAssignments(userId: number, paginationData: paginationData) {
-
+  async getAllCoursesAssignments(
+    userId: number,
+    paginationData: paginationData
+  ) {
     const enrolledCourses = await enrolled.findAll({
       where: { userid: userId },
       attributes: ["courseid"],
     });
-  
-    const courseIds = enrolledCourses.map(ec => ec.courseid);
-  
+
+    const courseIds = enrolledCourses.map((ec) => ec.courseid);
+
     const assignments = await assignment.findAndCountAll({
       where: {
         courseid: courseIds,
@@ -267,7 +269,7 @@ export const courseRepositories = {
       include: [
         {
           model: course,
-          as: "course", 
+          as: "course",
           attributes: ["coursename", "description", "instructorid"],
         },
         {
@@ -275,24 +277,29 @@ export const courseRepositories = {
           as: "submissions",
           where: { userid: userId },
           required: false,
-          attributes: ["userid", "courseid", "assignmentid", "isaccepted", "submissionUrl"],
+          attributes: [
+            "userid",
+            "courseid",
+            "assignmentid",
+            "isaccepted",
+            "submissionUrl",
+          ],
         },
       ],
       distinct: true,
       order: [[paginationData.sortBy, paginationData.sortType]],
-      limit: paginationData.limit, 
+      limit: paginationData.limit,
       offset: paginationData.offset,
     });
-  
+
     return assignments;
   },
-  
 
   // async getAllCoursesAssignments(userid: number, paginationData: paginationData) {
   //   return enrolled.findAll({
   //     where: {
   //       userid: userid,
-          
+
   //       },
   //     attributes: ["userid", "courseid", "enrolleddate", "validuntildate"],
   //     include: [
@@ -338,7 +345,7 @@ export const courseRepositories = {
   //              order: [[paginationData.sortBy, paginationData.sortType]],
   //             },
   //           ],
-            
+
   //         },
   //       ],
   //       limit: paginationData.limit,
@@ -384,22 +391,26 @@ export const courseRepositories = {
     instructorid: number,
     paginationData: paginationData
   ) {
-    console.log(paginationData)
+    const number = Number(paginationData.search);
+    const searchData = `%${paginationData.search}%`;
+    const searchedTerm: any[] = [{
+      coursename: {
+        [Op.iLike] : searchData
+      }
+    }];
+
+    if (!isNaN(number)) {
+      searchedTerm.push({
+        courseprice: {
+          [Op.eq]: number,
+        },
+      });
+    }
+
     return course.findAndCountAll({
       where: {
         instructorid: instructorid,
-        [Op.or]: [
-          {
-            coursename: {
-              [Op.like]: `%${paginationData.search}%`,
-            },
-          },
-          {
-            description: {
-              [Op.like]: `%${paginationData.search}%`,
-            },
-          },
-        ],
+        [Op.or] : searchedTerm
       },
 
       order: [[paginationData.sortBy, paginationData.sortType]],

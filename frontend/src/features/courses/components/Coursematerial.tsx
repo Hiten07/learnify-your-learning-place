@@ -10,12 +10,13 @@ import { showToastMessage } from "../../../utils/Toast.errors";
 import { useAuthContext } from "../../../hooks/Createcontext";
 import { useNavigate } from "react-router-dom";
 import ProgressBar from "../../student/components/Progressbar";
+import { progressbarDetails } from "../../student/types/progreess.types";
 
 const Coursematerial = () => {
   const [courseData, setCourseData] = useState([]);
   const [showaddAssignmentModal, setshowaddAssignmentModal] = useState(false);
   const [loading, setLoading] = useState(false);
-  const [progressBar, setProgressBar] = useState({});
+  const [progressBar, setProgressBar] = useState<progressbarDetails>({});
 
   const { courseid } = useParams();
   const coursedetails = useLocation();
@@ -58,7 +59,6 @@ const Coursematerial = () => {
     }
   };
 
-
   const deleteCourseModule = async (moduleid: number) => {
     setLoading(true);
     const queryParams = {
@@ -66,18 +66,17 @@ const Coursematerial = () => {
     };
     try {
       const result = await deleteApis("/courses/module/delete", queryParams);
-    if(result) {
-      navigate(`/courses/${courseid}`,{
-        state: coursedetails.state
-      })
-      showToastMessage(result.message, 200);
-    }
-    setLoading(false)
+      if (result) {
+        navigate(`/courses/${courseid}`, {
+          state: coursedetails.state,
+        });
+        showToastMessage(result.message, 200);
+      }
+      setLoading(false);
     } catch (error) {
       console.log(error);
     }
   };
-
 
   const closeModel = async () => {
     setshowaddAssignmentModal(false);
@@ -97,7 +96,6 @@ const Coursematerial = () => {
     };
     fetchCourse();
 
-
     if (authToken && role === "student") {
       const fetchProgress = async () => {
         try {
@@ -105,13 +103,13 @@ const Coursematerial = () => {
             "/enrollcourses/trackprogress",
             queryParams
           );
-          console.log(result.data);
+          console.log(result.data, "this is data");
           setProgressBar(result.data);
         } catch (error) {
           console.log(error);
         }
       };
-      
+
       fetchProgress();
     }
     setLoading(false);
@@ -174,9 +172,7 @@ const Coursematerial = () => {
         </div>
 
         {authToken && role === "student" ? (
-          <div>
-            <ProgressBar progress={progressBar} />
-          </div>
+          <div>{progressBar && <ProgressBar progress={progressBar} />}</div>
         ) : (
           ""
         )}

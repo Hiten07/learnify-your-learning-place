@@ -9,7 +9,7 @@ const Dashboard = () => {
   const [coursedata, setCoursedata] = useState([]);
   // const [filteredCourseData, setFilteredCourseData] = useState([])
   // const [coursedatacopy, setCoursedatacopy] = useState([]);
-  const [loading, setLoading] = useState(false);
+  const [loading, setLoading] = useState(false); 
   const [totalCoursesCreated, setTotalCourseCreated] = useState(0);
   const [searchData, setSearchData] = useState<string>("");
 
@@ -76,7 +76,8 @@ const Dashboard = () => {
 
   const handlePaginationChange = (newPage: number) => {
     queryParams.page = newPage.toString();
-    fetchAllInstructorCourses();
+    queryParams.search = searchData;
+    debounceFetchedData();
   };
 
   useEffect(() => {

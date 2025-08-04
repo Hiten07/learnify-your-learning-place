@@ -149,7 +149,7 @@ const Assignments = () => {
                 </button>
               ) : (
                 <button
-                  className="text-black px-4 py-2 rounded cursor-not-allowed"
+                  className="text-white px-4 py-2 rounded cursor-not-allowed"
                   style={{ backgroundColor: "lightblue" }}
                   disabled={true}
                 >

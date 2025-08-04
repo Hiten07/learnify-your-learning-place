@@ -106,12 +106,14 @@ export const assignmentController = {
           courseid,
           paginationData
         );
-
       if (assignments) {
         const result = paginationresponse(assignments, page, limit);
         response(res, result, "Assignments retrieved successfully");
+        console.log(assignments,"Aa")
       }
-      res.status(404).json({ error: "No assignments found for this course" });
+      else {
+        res.status(404).json({ message: "No assignments found for this course" });
+      }
     } catch (error) {
       console.log(error);
       res

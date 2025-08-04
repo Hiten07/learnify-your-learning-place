@@ -2,7 +2,10 @@ import DataTable from "react-data-table-component";
 import { useEffect, useState } from "react";
 import { Loader } from "../../../utils/Loader";
 import { getApis } from "../../../api/course.api";
-import { Coursepurchasehistory,Enrolledcoursesandusersdetails } from "../types/courses.types";
+import {
+  Coursepurchasehistory,
+  Enrolledcoursesandusersdetails,
+} from "../types/courses.types";
 import { convertStringDate } from "../../../utils/Convertstringtodate";
 
 const Coursehistory = () => {
@@ -26,43 +29,47 @@ const Coursehistory = () => {
     fetchCourse();
   }, []);
 
-    
-  const tableData = apiData?.flatMap((course: Coursepurchasehistory) =>
-    course.enrolledcourses?.map((enrolled: Enrolledcoursesandusersdetails) => ({
-      coursename: course?.coursename,
-      description: course?.description,
-      enrolleddate: enrolled?.enrolleddate,
-      firstname: enrolled?.users?.firstname || "-",
-      lastname: enrolled?.users?.lastname || "-",
-      email: enrolled?.users?.email || "-",
-    })) || []
-  ) || [];
-
+  const tableData =
+    apiData?.flatMap(
+      (course: Coursepurchasehistory) =>
+        course.enrolledcourses?.map(
+          (enrolled: Enrolledcoursesandusersdetails) => ({
+            coursename: course?.coursename,
+            description: course?.description,
+            enrolleddate: enrolled?.enrolleddate,
+            firstname: enrolled?.users?.firstname || "-",
+            lastname: enrolled?.users?.lastname || "-",
+            email: enrolled?.users?.email || "-",
+          })
+        ) || []
+    ) || [];
 
   const columns = [
     {
       name: "Course Title",
-      selector: (row: { coursename: string}) => row.coursename,
+      selector: (row: { coursename: string }) => row.coursename,
       sortable: true,
     },
     {
       name: "Description",
-      selector: (row: { description: string}) => row.description,
+      selector: (row: { description: string }) => row.description,
       sortable: true,
     },
     {
       name: "Enrolled Date",
-      selector: (row: { enrolleddate: string}) => convertStringDate( row.enrolleddate ),
+      selector: (row: { enrolleddate: string }) =>
+        convertStringDate(row.enrolleddate),
       sortable: true,
     },
     {
       name: "Student Name",
-      selector: (row: { firstname: string,lastname: string}) => `${row.firstname} ${row.lastname}`,
+      selector: (row: { firstname: string; lastname: string }) =>
+        `${row.firstname} ${row.lastname}`,
       sortable: true,
     },
     {
       name: "Email",
-      selector: (row: { email: string}) => row.email,
+      selector: (row: { email: string }) => row.email,
       sortable: true,
     },
   ];
@@ -88,4 +95,3 @@ const Coursehistory = () => {
 };
 
 export default Coursehistory;
-

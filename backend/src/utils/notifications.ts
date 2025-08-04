@@ -14,7 +14,7 @@ export const notifyStudentsAssignmentAdded = async (courseId: number, assignment
         title: assignmentTitle,
         message: `New assignment "${assignmentTitle}" added to your course.`,
       });
-      console.log("message sent")
+      console.log("message sent");
     }
   });
 };
