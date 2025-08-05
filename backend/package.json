@@ -4,6 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
+    "dev": "npx ts-node --files src/index.ts",
+    "build": "tsc",
     "start": "npx ts-node --files src/index.ts",
     "migration:create": "npx sequelize-cli migration:generate",
     "migration:run": "npx sequelize-cli db:migrate"
