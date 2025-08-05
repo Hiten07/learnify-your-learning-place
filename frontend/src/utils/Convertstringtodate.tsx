@@ -5,8 +5,6 @@ export const convertStringDate = (validuntildateAsString: string) => {
 
   validuntildate.setMinutes(validuntildate.getMinutes() + 30);
 
-
-//   console.log(validuntildate.getDate() , validuntildate.getMonth()+1 , validuntildate.getFullYear())
   let validUntilDateFormatted: string = "";
 
   if (validuntildate.getDate() < 10) {
